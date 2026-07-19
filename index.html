@@ -113,21 +113,6 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
     </div>
   </div>
 
-  <span class="tint strip strip--right" aria-hidden="true" style="margin-top:clamp(2.5rem,10cqw,4rem)"></span>
-
-  <div class="wrap countdown-block" style="margin-top:clamp(2.5rem,10cqw,4rem)">
-    <span class="tint mandala spin ccw" aria-hidden="true"></span>
-    <h2 class="script" id="hCountdown" data-anim="up"></h2>
-    <div class="countdown" id="countdown" data-anim="up">
-      <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-h>00</b><span data-unit="1"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-m>00</b><span data-unit="2"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-s>00</b><span data-unit="3"></span></div>
-    </div>
-  </div>
 </section>
 
 <!-- ═══ АДРЕС (розовое панно) ═══ -->
@@ -164,9 +149,23 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   </div>
 </section>
 
-<!-- ═══ ПУСТОЙ ВОЛНИСТЫЙ ФУТЕР ═══ -->
-<footer class="foot" aria-hidden="true">
+<!-- ═══ ВОЛНИСТЫЙ ФУТЕР С ОБРАТНЫМ ОТСЧЁТОМ ═══ -->
+<footer class="foot on-rose">
   <svg class="panel-edge panel-edge--top" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path/></svg>
+
+  <div class="wrap countdown-block">
+    <span class="tint mandala spin ccw" aria-hidden="true"></span>
+    <h2 class="script" id="hCountdown" data-anim="up"></h2>
+    <div class="countdown" id="countdown" data-anim="up">
+      <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-h>00</b><span data-unit="1"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-m>00</b><span data-unit="2"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-s>00</b><span data-unit="3"></span></div>
+    </div>
+  </div>
 </footer>
 
 </div><!-- .phone-content -->

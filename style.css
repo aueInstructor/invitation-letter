@@ -202,7 +202,7 @@ img{max-width:100%;display:block}
 /* ═══════════ КНОПКА МУЗЫКИ ═══════════ */
 #music{
   --music-size:clamp(74px,19vw,96px); /* диаметр самой кнопки */
-  --music-ico:42%;                    /* диаметр значка внутри — доля от кнопки */
+  --music-ico:60%;                    /* диаметр значка внутри — доля от кнопки */
   position:fixed;top:1rem;left:1rem;z-index:50;
   width:var(--music-size);aspect-ratio:1;
   border:0;padding:0;border-radius:50%;
