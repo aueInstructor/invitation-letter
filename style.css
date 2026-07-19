@@ -41,6 +41,13 @@
 
   --edge:max(96px, 23cqw);  /* высота волнистого края панно */
 
+  /* Высота числа в ячейке календаря. Браузер ставит по центру строку
+     целиком, а не сами цифры, поэтому число немного «садится».
+     Отрицательное значение поднимает, положительное опускает.
+     Единица em — доля от размера цифры, так что при любом размере
+     экрана поправка остаётся пропорциональной. 0 — как рисует браузер. */
+  --cal-nudge:.1em;
+
   /* ЦВЕТА КАРТИНОК-ТРАФАРЕТОВ.
      Файлы в assets/ — белые силуэты; цвет им задаётся здесь,
      как тонирование белой иконки в Unity. Меняйте свободно. */
@@ -137,6 +144,17 @@ img{max-width:100%;display:block}
   text-align:center;font-weight:400;
 }
 .script.lg{font-size:clamp(3rem,14cqw,4.6rem)}
+/* имена хозяев — всегда одной строкой; если длинно,
+   кегль уменьшит fitOneLine() в index.html */
+#hosts{white-space:nowrap}
+/* имена пары — столбиком: имя / & / имя */
+#coupleName .nm{display:block;line-height:1.05}
+#coupleName .amp{
+  display:block;line-height:1;
+  font-size:.5em;             /* связка мельче имён */
+  margin:.12em 0;
+  opacity:.8;
+}
 .on-rose,.on-rose .caps{color:var(--paper)}
 .on-rose .script,.on-rose .unit b,.on-rose .unit span,.on-rose .colon{color:var(--paper)}
 
@@ -207,6 +225,25 @@ img{max-width:100%;display:block}
 .hero .orn-ml{bottom:6%;left:-8%}
 .hero .inner{position:relative;z-index:1;width:min(100% - 2.5rem,40rem);margin-inline:auto}
 
+/* монограмма в круге — над крупной надписью */
+.monogram{
+  --size:clamp(120px,34cqw,190px);
+  width:var(--size);height:var(--size);margin:0 auto clamp(1.4rem,6cqw,2.2rem);
+  border:1px solid var(--rose-lt);border-radius:50%;
+  display:grid;place-items:center;
+}
+.monogram span{
+  font-family:var(--script);color:var(--rose);
+  font-size:calc(var(--size) * .3);line-height:1;white-space:nowrap;
+  /* цифры и буквы садятся ниже середины круга — та же поправка,
+     что и в календаре, только на глаз крупнее */
+  transform:translateY(-.04em);
+}
+/* видно только экранному диктору */
+.sr-only{
+  position:absolute;width:1px;height:1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;
+}
 .logo{text-align:center}
 .logo b{
   display:block;font-family:var(--display);font-weight:400;color:var(--rose);
@@ -309,11 +346,9 @@ section.block > .wrap{position:relative;z-index:1}
   font-size:clamp(1.05rem,4.6cqw,1.4rem);
   aspect-ratio:1;display:grid;place-items:center;position:relative;z-index:0;
 }
-/* Оптическое центрирование. Браузер ставит по центру строку целиком,
-   а у неё подъём (19/20em) заметно больше высоты цифр (11/20em) — над
-   числом остаётся больше воздуха, чем под ним, и оно кажется осевшим.
-   Поднимаем на разницу; кольцо остаётся по центру ячейки. */
-.cal-grid i span{display:block;line-height:1;transform:translateY(-.148em)}
+/* Подъём числа — величина в --cal-nudge, в самом верху файла.
+   Кольцо остаётся по центру ячейки, двигается только цифра. */
+.cal-grid i span{display:block;line-height:1;transform:translateY(var(--cal-nudge))}
 /* выбранный день: только пульсирующая обводка, без заливки */
 .cal-grid i.mark{color:var(--rose)}
 .cal-grid i.mark::before{

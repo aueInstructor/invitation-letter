@@ -61,9 +61,12 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   <span class="tint orn orn-ml" style="--src:url('assets/ornament-left.webp')" aria-hidden="true" data-anim="right"></span>
 
   <div class="inner">
-    <h1 class="logo" data-anim="zoom">
-      <b id="logoTitle"></b>
-    </h1>
+    <div class="monogram" data-anim="zoom" aria-hidden="true">
+      <span id="monogram"></span>
+    </div>
+    <!-- заголовок страницы остаётся для поиска и экранного диктора,
+         на экране его заменяет монограмма выше -->
+    <h1 class="sr-only" id="logoTitle"></h1>
   </div>
 </header>
 
@@ -270,11 +273,20 @@ function applyLang(){
 
   // герой
   set('logoTitle', logo.title);
+  // монограмма в круге: берём из конфига, иначе — первые буквы имён
+  // (logo.title остаётся невидимым заголовком страницы)
+  set('monogram', logo.monogram ||
+      `${(couple.one || '')[0] || ''} & ${(couple.two || '')[0] || ''}`);
 
   // приглашение
   set('salutation', L.invite.salutation);
   set('inviteBefore', L.invite.before);
-  set('coupleName', names);
+  // имена столбиком: имя / & / имя. Амперсанд мельче — он связка,
+  // а не имя, и не должен спорить с ними по весу
+  $('coupleName').innerHTML =
+    `<span class="nm">${couple.one}</span>` +
+    `<span class="amp">&amp;</span>` +
+    `<span class="nm">${couple.two}</span>`;
   set('inviteAfter', L.invite.after);
 
   // хозяева
@@ -347,9 +359,35 @@ function applyLang(){
   const next = LANG_KEYS[(LANG_KEYS.indexOf(lang) + 1) % LANG_KEYS.length];
   set('lang', CONFIG.langs[next].switchLabel);
   attr('lang', 'aria-label', CONFIG.langs[next].switchLabel);
+
+  FIT_ONE_LINE.forEach(fitOneLine);
+}
+
+/* строки, которые всегда должны стоять в одну строку */
+const FIT_ONE_LINE = ['hosts'];
+
+/* Эти строки должны стоять в одну строку при любой длине.
+   Переносить нечему — вместо этого уменьшаем кегль, пока строка не
+   влезет в колонку. Шрифт загружается позже разметки, поэтому меряем
+   ещё раз, когда он готов, и при смене ширины окна. */
+function fitOneLine(id){
+  const el = $(id);
+  if (!el) return;
+  el.style.fontSize = '';                       // вернуть размер из CSS
+  const room = el.parentElement.clientWidth;
+  if (!room) return;
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  const min = size * 0.3;                       // ниже не опускаемся
+  while (el.scrollWidth > room && size > min){
+    size -= 0.5;
+    el.style.fontSize = size + 'px';
+  }
 }
 
 applyLang();
+if (document.fonts && document.fonts.ready)
+  document.fonts.ready.then(() => FIT_ONE_LINE.forEach(fitOneLine));
+window.addEventListener('resize', () => FIT_ONE_LINE.forEach(fitOneLine), { passive: true });
 
 $('lang').addEventListener('click', () => {
   lang = LANG_KEYS[(LANG_KEYS.indexOf(lang) + 1) % LANG_KEYS.length];
