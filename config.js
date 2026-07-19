@@ -207,7 +207,7 @@ const CONFIG = {
       venue: {
         address: [
           'Шымкент қ., Тамерлан тас жолы, 175Б',
-          '«Ai-Sulu» банкет залы',
+          '«Ai-Sulu»',
         ],
         name: 'Ai-Sulu',
         kind: 'мейрамханасы',

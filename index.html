@@ -96,8 +96,9 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   <svg class="panel-edge panel-edge--bottom" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path/></svg>
 </section>
 
-<!-- ═══ ДАТА ТОРЖЕСТВА + КАЛЕНДАРЬ + ОТСЧЁТ (всё на белом) ═══ -->
+<!-- ═══ ДАТА ТОРЖЕСТВА + КАЛЕНДАРЬ (на белом) ═══ -->
 <section class="block">
+  <span class="tint mandala spin ccw" aria-hidden="true"></span>
   <div class="wrap stack">
     <h2 class="script" id="hCeremony" data-anim="up"></h2>
     <p class="caps" id="ceremony" data-anim="up"></p>
@@ -128,10 +129,26 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   <svg class="panel-edge panel-edge--bottom" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path/></svg>
 </section>
 
-<!-- ═══ АНКЕТА (на белом) ═══ -->
+<!-- ═══ ОБРАТНЫЙ ОТСЧЁТ + АНКЕТА (на белом) ═══ -->
 <section class="block">
   <span class="tint ghost-ring r spin" aria-hidden="true" style="top:2%"></span>
-  <div class="wrap stack">
+
+  <div class="wrap countdown-block">
+    <h2 class="script" id="hCountdown" data-anim="up"></h2>
+    <div class="countdown" id="countdown" data-anim="up">
+      <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-h>00</b><span data-unit="1"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-m>00</b><span data-unit="2"></span></div>
+      <span class="colon">:</span>
+      <div class="unit"><b data-s>00</b><span data-unit="3"></span></div>
+    </div>
+  </div>
+
+  <span class="tint strip strip--right" aria-hidden="true" style="margin-top:clamp(2.5rem,10cqw,4rem)"></span>
+
+  <div class="wrap stack" style="margin-top:clamp(3.5rem,10cqw,4rem)">
     <h2 class="script" id="hRsvp" data-anim="up"></h2>
     <p class="caps" id="rsvpPrompt" data-anim="up"></p>
 
@@ -149,23 +166,9 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   </div>
 </section>
 
-<!-- ═══ ВОЛНИСТЫЙ ФУТЕР С ОБРАТНЫМ ОТСЧЁТОМ ═══ -->
-<footer class="foot on-rose">
+<!-- ═══ ПУСТОЙ ВОЛНИСТЫЙ ФУТЕР ═══ -->
+<footer class="foot" aria-hidden="true">
   <svg class="panel-edge panel-edge--top" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path/></svg>
-
-  <div class="wrap countdown-block">
-    <span class="tint mandala spin ccw" aria-hidden="true"></span>
-    <h2 class="script" id="hCountdown" data-anim="up"></h2>
-    <div class="countdown" id="countdown" data-anim="up">
-      <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-h>00</b><span data-unit="1"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-m>00</b><span data-unit="2"></span></div>
-      <span class="colon">:</span>
-      <div class="unit"><b data-s>00</b><span data-unit="3"></span></div>
-    </div>
-  </div>
 </footer>
 
 </div><!-- .phone-content -->
