@@ -32,8 +32,8 @@
   /* две тени: основная вниз и слабая вверх — иначе верхний волнистый
      край, который нависает над соседним блоком, остаётся без тени */
   --panno-shadow:
-     drop-shadow(0 5px 20px rgb(9, 41, 38,.7))
-     drop-shadow(0 -4px 20px rgba(9, 41, 38,.04));
+     drop-shadow(0 5px 10px rgb(9, 41, 38,.7))
+     drop-shadow(0 -4px 10px rgba(9, 41, 38,.04));
   --display:'Prata', Georgia, serif;
   --script:'KZ Good Vibes', 'Prata', cursive;
 
@@ -338,7 +338,25 @@ section.block > .wrap{position:relative;z-index:1}
 .pill:hover,.pill:focus-visible{transform:translateY(-2px);opacity:.92}
 .pill--light{background:var(--paper);color:var(--rose)}
 .pill--rose{background:var(--rose);color:var(--paper);font-family:var(--script);
-  font-size:clamp(1.5rem,7cqw,2rem);letter-spacing:0;text-transform:none;padding:.5rem 2rem}
+  font-size:clamp(1.5rem,7cqw,2rem);letter-spacing:0;text-transform:none;padding:.5rem 2rem;
+  /* блик ездит внутри кнопки, overflow обрезает его по скруглению */
+  position:relative;overflow:hidden;isolation:isolate;
+}
+.pill--rose::after{
+  content:'';position:absolute;top:-25%;left:-40%;height:150%;width:2.6em;
+  /* к краям полоса растворяется — так блик мягче сплошной заливки */
+  background:linear-gradient(90deg,
+     transparent, rgba(255,255,255,.45), transparent);
+  transform:skewX(-20deg) translateX(0);
+  animation:pill-shine 5s ease-in-out infinite;
+  pointer-events:none;z-index:-1;
+}
+/* проезд занимает лишь четверть цикла, остальное время полоса ждёт
+   за правым краем — отсюда ритм «сверкнула — пауза», а не мельтешение */
+@keyframes pill-shine{
+  0%       {transform:skewX(-20deg) translateX(0)}
+  26%, 100%{transform:skewX(-20deg) translateX(1000%)}
+}
 
 /* ═══════════ АНКЕТА ═══════════ */
 .rsvp{max-width:26rem;margin:clamp(2rem,7cqw,2.8rem) auto 0}
