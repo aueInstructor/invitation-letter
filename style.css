@@ -248,18 +248,29 @@ section.block > .wrap{position:relative;z-index:1}
 
 /* лента-бордюр во всю ширину (тоже трафарет — цвет из --tint-strip) */
 .strip{
-  width:100%;height:clamp(26px,7cqw,46px);
+  /* картинка узора 52494.73 × 1392.98 — ширина одной плитки ровно
+     в 37.685 раза больше высоты ленты. Сдвиг на эту величину
+     возвращает узор в исходное положение, поэтому петля не заметна */
+  --strip-h:clamp(26px,7cqw,46px);
+  --strip-tile:calc(var(--strip-h) * 37.685);
+  width:100%;height:var(--strip-h);
   --src:url('assets/border-strip.svg');--tint:var(--tint-strip);
   -webkit-mask-size:auto 100%;mask-size:auto 100%;
   /* узор повторяется, иначе при сдвиге у края появилась бы пустота */
   -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
-  animation:strip-drift 26s ease-in-out infinite alternate;
+  /* linear, а не ease: скорость должна быть ровной, без разгонов */
+  animation:strip-left 60s linear infinite;
 }
-/* лента медленно уплывает влево, потом так же медленно возвращается:
-   alternate разворачивает ход, поэтому в петле нет рывка */
-@keyframes strip-drift{
-  from{-webkit-mask-position:0 center;        mask-position:0 center}
-  to  {-webkit-mask-position:-16cqw center;   mask-position:-16cqw center}
+.strip--right{animation-name:strip-right}
+@keyframes strip-left{
+  from{-webkit-mask-position:0 center; mask-position:0 center}
+  to  {-webkit-mask-position:calc(var(--strip-tile) * -1) center;
+               mask-position:calc(var(--strip-tile) * -1) center}
+}
+@keyframes strip-right{
+  from{-webkit-mask-position:0 center; mask-position:0 center}
+  to  {-webkit-mask-position:var(--strip-tile) center;
+               mask-position:var(--strip-tile) center}
 }
 
 /* сердечко-разделитель */
