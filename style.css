@@ -176,8 +176,10 @@ img{max-width:100%;display:block}
 @keyframes drip{0%,100%{transform:scaleY(.35);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 .spin{animation:spin 26s linear infinite}
 .spin-fast{animation:spin 15s linear infinite}
-/* против часовой стрелки — тот же кадр, проигранный задом наперёд */
-.spin-back{animation:spin 26s linear infinite reverse}
+/* добавка к .spin / .spin-fast: тот же кадр задом наперёд,
+   то есть вращение против часовой стрелки. Идёт ниже них,
+   иначе сокращённая запись animation вернула бы направление обратно */
+.ccw{animation-direction:reverse}
 .pulse{animation:pulse 2.4s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
@@ -199,8 +201,10 @@ img{max-width:100%;display:block}
 
 /* ═══════════ КНОПКА МУЗЫКИ ═══════════ */
 #music{
+  --music-size:clamp(74px,19vw,96px); /* диаметр самой кнопки */
+  --music-ico:42%;                    /* диаметр значка внутри — доля от кнопки */
   position:fixed;top:1rem;left:1rem;z-index:50;
-  width:clamp(74px,19vw,96px);aspect-ratio:1;
+  width:var(--music-size);aspect-ratio:1;
   border:0;padding:0;border-radius:50%;
   background:var(--rose);cursor:pointer;
   display:grid;place-items:center;
@@ -211,7 +215,7 @@ img{max-width:100%;display:block}
   font-family:var(--display);font-size:5.9px;letter-spacing:.95px;
   text-transform:uppercase;fill:var(--paper);
 }
-#music .ico{width:42%;height:auto}
+#music .ico{width:var(--music-ico);height:auto}
 
 /* ═══════════ ГЕРОЙ ═══════════ */
 .hero{

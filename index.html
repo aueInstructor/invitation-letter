@@ -41,7 +41,7 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
 
 <!-- ═══ КНОПКА МУЗЫКИ ═══ -->
 <button id="music" type="button" aria-label="Включить музыку" hidden>
-  <svg class="ring spin-fast" viewBox="0 0 100 100" aria-hidden="true">
+  <svg class="ring spin-fast ccw" viewBox="0 0 100 100" aria-hidden="true">
     <defs><path id="musicPath" d="M50,50 m-39,0 a39,39 0 1,1 78,0 a39,39 0 1,1 -78,0"/></defs>
     <text><textPath href="#musicPath" startOffset="0%" id="musicRingText"></textPath></text>
   </svg>
@@ -116,7 +116,7 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   <span class="tint strip strip--right" aria-hidden="true" style="margin-top:clamp(2.5rem,10cqw,4rem)"></span>
 
   <div class="wrap countdown-block" style="margin-top:clamp(2.5rem,10cqw,4rem)">
-    <span class="tint mandala spin-back" aria-hidden="true"></span>
+    <span class="tint mandala spin ccw" aria-hidden="true"></span>
     <h2 class="script" id="hCountdown" data-anim="up"></h2>
     <div class="countdown" id="countdown" data-anim="up">
       <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
@@ -358,9 +358,9 @@ function applyLang(){
     </label>`).join('');
 
   // кнопка музыки
-  set('musicRingText', (L.music.ring || '').repeat(2));
-  const track = $('track');
-  attr('music', 'aria-label', track && !track.paused ? L.music.pause : L.music.play);
+  fillRing(L.music.ring || '');
+  const mbtn = $('music');
+  attr('music', 'aria-label', mbtn && mbtn.dataset.playing ? L.music.pause : L.music.play);
 
   // кнопка смены языка показывает язык, на который переключит
   const next = LANG_KEYS[(LANG_KEYS.indexOf(lang) + 1) % LANG_KEYS.length];
@@ -395,9 +395,39 @@ function fitOneLine(id){
   }
 }
 
+/* Надпись по кругу кнопки музыки.
+   Длина фразы на русском и на казахском разная, поэтому фиксированное
+   число повторов оставляло на одном из языков пустую дугу. Считаем,
+   сколько копий укладывается в окружность, и растягиваем их ровно
+   по ней — textLength раздаёт разницу в пробелы между буквами. */
+function fillRing(text){
+  const tp = $('musicRingText'), path = $('musicPath');
+  if (!tp || !path || !text) return;
+  const txt = tp.parentNode;                       // <text>, на нём задан интервал
+  txt.style.letterSpacing = '';                    // померить с интервалом из CSS
+  tp.textContent = text;
+  const circle = path.getTotalLength(), one = tp.getComputedTextLength();
+  if (!(one > 0)) { tp.textContent = text.repeat(2); return; }   // шрифт ещё не готов
+
+  tp.textContent = text.repeat(Math.max(1, Math.round(circle / one)));
+  // остаток разгоняем по буквам, подбирая интервал: браузер считает
+  // длину строки не совсем как сумма букв и промежутков, поэтому
+  // доводим за пару шагов, каждый раз перемеряя
+  let spacing = parseFloat(getComputedStyle(txt).letterSpacing) || 0;
+  for (let i = 0; i < 4; i++){
+    const diff = circle - tp.getComputedTextLength();
+    if (Math.abs(diff) < .05) break;
+    spacing += diff / tp.textContent.length;
+    txt.style.letterSpacing = spacing + 'px';
+  }
+}
+
 applyLang();
 if (document.fonts && document.fonts.ready)
-  document.fonts.ready.then(() => FIT_ONE_LINE.forEach(fitOneLine));
+  document.fonts.ready.then(() => {
+    FIT_ONE_LINE.forEach(fitOneLine);
+    fillRing(CONFIG.langs[lang].music.ring || '');
+  });
 window.addEventListener('resize', () => FIT_ONE_LINE.forEach(fitOneLine), { passive: true });
 
 $('lang').addEventListener('click', () => {
@@ -412,20 +442,94 @@ $('lang').addEventListener('click', () => {
 /* ═══════════════════════════════════════════════════════════════
    3. ФОНОВАЯ МУЗЫКА — кнопка появляется, только если файл задан
    ═══════════════════════════════════════════════════════════════ */
-if (CONFIG.music){
+// music можно записать строкой ('music.mp3') или объектом с настройками
+const MUSIC = typeof CONFIG.music === 'string' ? { file: CONFIG.music }
+                                               : (CONFIG.music || {});
+if (MUSIC.file){
   const btn = $('music'), icon = $('musicIcon'), track = $('track');
-  track.src = CONFIG.music;
+  const START  = MUSIC.start  || 0;                              // с какой секунды играть
+  const FADE   = (MUSIC.fade   != null ? MUSIC.fade   : 1.5) * 1000;  // мс
+  const VOLUME = MUSIC.volume != null ? MUSIC.volume : 1;
+
+  track.src = MUSIC.file;
+  track.volume = 0;
+  // зацикливаем сами: штатный loop возвращает на нулевую секунду,
+  // а нам нужно обратно на START
+  track.loop = false;
   btn.hidden = false;
+
+  /* Плавно выводим громкость на VOLUME. Выключение всегда мгновенное,
+     поэтому обратного хода тут нет — только нарастание. */
+  let fadeTimer = null;
+  function fadeIn(){
+    clearInterval(fadeTimer);
+    const from = track.volume, step = 1000 / 60;
+    const dur = Math.max(FADE * (VOLUME - from) / Math.max(VOLUME, .001), step);
+    let passed = 0;
+    fadeTimer = setInterval(() => {
+      passed += step;
+      const k = Math.min(passed / dur, 1);
+      track.volume = Math.min(1, Math.max(0, from + (VOLUME - from) * k));
+      if (k === 1){ clearInterval(fadeTimer); fadeTimer = null; }
+    }, step);
+  }
+  function stop(){
+    clearInterval(fadeTimer); fadeTimer = null;
+    track.pause();
+    track.volume = 0;          // следующее включение снова начнётся плавно
+  }
+
+  /* Перемотка на START. Пока пришли только метаданные, а самих данных
+     ещё нет, браузер молча возвращает перемотку в нуль — поэтому
+     проверяем результат и, если не вышло, повторяем, когда данные дойдут. */
+  function seekToStart(){
+    if (!START) return;
+    const apply = () => {
+      if (track.duration && START < track.duration) track.currentTime = START;
+    };
+    apply();
+    if (Math.abs(track.currentTime - START) > .3)
+      track.addEventListener('canplay', apply, { once: true });
+  }
+
+  /* Первый запуск идёт со START, повторный после паузы — с того места,
+     где остановились. С preload="none" метаданных ещё нет, а без них
+     перемотка молча не срабатывает, поэтому ждём их. */
+  let started = false;
+  function play(){
+    const go = () => {
+      if (!wantPlay) return;                       // передумали, пока грузилось
+      if (!started){ started = true; seekToStart(); }
+      track.play().then(fadeIn, () => {});
+    };
+    if (track.readyState >= 1) go();
+    else { track.addEventListener('loadedmetadata', go, { once: true }); track.load(); }
+  }
+
+  /* Состояние кнопки держим отдельно от track.paused: файл тяжёлый,
+     и пока он грузится, дорожка ещё на паузе — иначе второе нажатие
+     снова включало бы музыку вместо того, чтобы отменить первое. */
+  let wantPlay = false;
   btn.addEventListener('click', () => {
-    if (track.paused){
-      track.play();
+    wantPlay = !wantPlay;
+    btn.dataset.playing = wantPlay ? '1' : '';
+    if (wantPlay){
+      play();
       icon.src = 'assets/sound-off.svg';
       btn.setAttribute('aria-label', L.music.pause);
     } else {
-      track.pause();
+      stop();                                      // выключение — сразу, без затухания
       icon.src = 'assets/sound-on.svg';
       btn.setAttribute('aria-label', L.music.play);
     }
+  });
+
+  /* Дорожка кончилась — возвращаемся на START и снова выводим звук:
+     плавный вход прячет склейку. */
+  track.addEventListener('ended', () => {
+    track.volume = 0;
+    seekToStart();
+    track.play().then(fadeIn, () => {});
   });
 }
 
