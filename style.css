@@ -14,12 +14,12 @@
 }
 
 :root{
-  --ink:#5C4433;      /* тёмное какао — акценты */
+  --ink:#4A3527;      /* тёмное какао — акценты */
   --paper:#FCF9F3;    /* тёплый крем — фон */
   --brown:#6E553F;    /* тёплый коричневый */
-  --gold:#9A8468;     /* какао — основной текст прописными */
-  --rose:#C9A88E;     /* пудровый беж — заголовки, панно */
-  --rose-lt:#DEC5B0;  /* беж светлее */
+  --gold:#826C50;     /* какао — основной текст прописными */
+  --rose:#8F6B4A;     /* какао — заголовки, панно */
+  --rose-lt:#C9A88E;  /* пудровый беж — кольца, дальняя волна */
   --rose-pale:#F3E7DC;/* самый светлый беж — дальняя волна */
   --display:'Prata', Georgia, serif;
   --script:'KZ Good Vibes', 'Prata', cursive;
@@ -33,7 +33,7 @@
   --tint-heart:   var(--rose);     /* сердечко-разделитель */
   --tint-ring:    var(--rose-lt);  /* большие кольца-орнаменты */
   --tint-mark:    var(--rose);     /* кольцо вокруг даты в календаре */
-  --tint-mandala: var(--paper);    /* мандала на розовом панно */
+  --tint-mandala: var(--rose);     /* мандала в блоке отсчёта */
   --tint-strip:   var(--rose);     /* узорная лента-бордюр */
 
   --phone:390px;      /* ширина «экрана телефона» на компьютере */
@@ -135,7 +135,9 @@ img{max-width:100%;display:block}
 [data-anim="zoom-out"]{transform:scale(.2)}
 .anim-in{opacity:1;transform:none}
 
-@keyframes spin{to{transform:rotate(360deg)}}
+/* вращаем через отдельное свойство rotate, а не transform:
+   иначе анимация затирала бы позиционирующий transform элемента */
+@keyframes spin{to{rotate:360deg}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
 @keyframes drip{0%,100%{transform:scaleY(.35);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 .spin{animation:spin 26s linear infinite}
@@ -367,11 +369,14 @@ section.block > .wrap{position:relative;z-index:1}
 }
 .panno .wave-pale{top:0;transform:translateY(-118%);fill:var(--rose-pale)}
 .panno .wave-rose{top:0;transform:translateY(-99.5%);fill:var(--rose)}
-.panno .mandala{
-  position:absolute;top:0;left:8%;
-  width:clamp(120px,34cqw,220px);aspect-ratio:1;
+/* мандала в углу блока с отсчётом — медленно вращается, как кольца */
+.countdown-block{position:relative}
+.countdown-block > *:not(.mandala){position:relative;z-index:1}
+.mandala{
+  position:absolute;right:-24%;bottom:-30%;
+  width:clamp(130px,38cqw,210px);aspect-ratio:1;
   --src:url('assets/mandala.webp');--tint:var(--tint-mandala);
-  transform:translateY(-96%);pointer-events:none;
+  opacity:.3;z-index:0;pointer-events:none;
 }
 .countdown{
   display:flex;justify-content:center;align-items:flex-start;
@@ -416,7 +421,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid curre
   #music,.scroll-hint,.ghost-ring{display:none}
   .hero{min-height:auto;padding:2rem 0}
   .panel,.panno,.foot{background:#fff;margin:1.5rem 0}
-  .panel-edge,.panno .wave,.panno .mandala{display:none}
+  .panel-edge,.panno .wave,.mandala{display:none}
   .on-rose,.on-rose .caps,.on-rose .script,.unit b,.unit span,.colon{color:#000}
   [data-anim]{opacity:1;transform:none}
 }
