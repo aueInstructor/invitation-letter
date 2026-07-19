@@ -136,7 +136,7 @@ const CONFIG = {
         ],
         name: 'Ai-Sulu',   // название прописью, в кавычках
         kind: '',  // подпись под названием
-        mapButton: 'Перейти на карту',
+        mapButton: 'Открыть карту',
       },
 
       rsvp: {
@@ -210,7 +210,7 @@ const CONFIG = {
         ],
         name: 'Ai-Sulu',
         kind: 'мейрамханасы',
-        mapButton: 'Картаға өту',
+        mapButton: 'Картаны ашу',
       },
 
       rsvp: {

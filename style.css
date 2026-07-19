@@ -73,6 +73,8 @@
   /* узорная лента-бордюр */
   --tint-mono: var(--rose);
   /* венок вокруг монограммы */
+  --tint-rings: var(--rose);
+  /* кольца в углу первого экрана */
 
   /* ДВИЖЕНИЕ ВОЛН у панно.
      Волна плывёт вбок и заодно медленно «дышит» — гребни опадают
@@ -463,8 +465,11 @@ img {
 }
 
 .hero .orn {
+  --orn-size: clamp(150px, 50cqw, 260px);
+  --orn-scale: 1;
+  /* доля от размера: у нижнего орнамента она своя, см. ниже */
   position: absolute;
-  width: clamp(150px, 50cqw, 260px);
+  width: calc(var(--orn-size) * var(--orn-scale));
   aspect-ratio: 240/359;
   --tint: var(--tint-orn);
   z-index: 0
@@ -478,8 +483,27 @@ img {
 }
 
 .hero .orn-ml {
+  --orn-scale: .88;
+  /* нижний чуть меньше верхнего */
   bottom: var(--orn-inset);
   left: -8%
+}
+
+/* обручальные кольца в правом нижнем углу первого экрана */
+.hero .rings {
+  --rings-size: 25cqw;
+  /* размер: доля от ширины колонки */
+  --rings-right: 7%;
+  --rings-bottom: 3.5%;
+  /* отступы от правого и нижнего края экрана */
+  position: absolute;
+  right: var(--rings-right);
+  bottom: var(--rings-bottom);
+  width: var(--rings-size);
+  aspect-ratio: 1;
+  --src: url('assets/rings.png');
+  --tint: var(--tint-rings);
+  z-index: 0;
 }
 
 .hero .inner {
@@ -491,7 +515,7 @@ img {
 
 /* монограмма в круге — над крупной надписью */
 .monogram {
-  --size: 90cqw;
+  --size: 85cqw;
   /* диаметр круга — 60% ширины колонки */
   --mono-letter: .26;
   /* размер букв: доля от диаметра круга.
