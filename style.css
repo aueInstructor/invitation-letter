@@ -376,19 +376,21 @@ img {
 
 /* ═══════════ КНОПКА СМЕНЫ ЯЗЫКА ═══════════ */
 #lang {
+  --lang-size: clamp(0.7671rem, 3.3392vw, 1.0153rem);
+  /* размер надписи; поля заданы в em, поэтому кнопка растёт вместе с ней */
   position: fixed;
   top: 1rem;
   right: 1rem;
   z-index: 50;
-  min-width: 3.6rem;
-  padding: .55rem .9rem;
+  min-width: 5em;
+  padding: .75em 1.15em;
   border: 1px solid var(--rose);
   border-radius: 999px;
   background: var(--paper);
   color: var(--rose);
   cursor: pointer;
   font-family: var(--display);
-  font-size: .72rem;
+  font-size: var(--lang-size);
   letter-spacing: .14em;
   text-transform: uppercase;
   line-height: 1;
@@ -403,10 +405,14 @@ img {
 
 /* ═══════════ КНОПКА МУЗЫКИ ═══════════ */
 #music {
-  --music-size: clamp(74px, 19vw, 96px);
+  --music-size: clamp(80px, 19vw, 100px);
   /* диаметр самой кнопки */
   --music-ico: 60%;
   /* диаметр значка внутри — доля от кнопки */
+  --music-outline: 1px;
+  /* толщина обводки вокруг кнопки; 0 — без неё */
+  --music-outline-gap: 3px;
+  /* просвет между кнопкой и обводкой */
   position: fixed;
   top: 1rem;
   left: 1rem;
@@ -417,6 +423,12 @@ img {
   padding: 0;
   border-radius: 50%;
   background: var(--rose);
+  /* обводка кольцом: сначала просвет цветом открытки, поверх него линия.
+     box-shadow, а не outline, — он повторяет круг и не занимает места
+     в разметке, поэтому кнопка не съезжает от угла */
+  box-shadow:
+    0 0 0 var(--music-outline-gap) var(--paper),
+    0 0 0 calc(var(--music-outline-gap) + var(--music-outline)) var(--rose);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -478,15 +490,37 @@ img {
 /* картинки — точные зеркала друг друга, поэтому отступ от края
    у обеих одинаковый: иначе орнаменты уезжают вбок по-разному */
 .hero .orn-tr {
+  --orn-scale: .9;
   top: var(--orn-inset);
-  right: -8%
+  right: -2%
 }
 
 .hero .orn-ml {
-  --orn-scale: .88;
+  --orn-scale: .8;
   /* нижний чуть меньше верхнего */
   bottom: var(--orn-inset);
-  left: -8%
+  left: -2%
+}
+
+/* дата свадьбы в правом верхнем углу первого экрана */
+.hero .hero-date {
+  --date-top: 13%;
+  --date-right: 7%;
+  /* отступы от верхнего и правого края экрана */
+  --date-size: clamp(.85rem, 3.9cqw, 1.1rem);
+  /* Дата ложится на границу орнамента: часть строки попадает на
+     бирюзу, часть на белое. Поэтому цвет тёмный — он читается и там,
+     и там, в отличие от золота или белого. */
+  position: absolute;
+  top: var(--date-top);
+  right: var(--date-right);
+  z-index: 1;
+  letter-spacing: .14em;
+  font-size: var(--date-size);
+  line-height: 1.45;
+  color: var(--ink);
+  white-space: nowrap;
+  text-align: right;
 }
 
 /* обручальные кольца в правом нижнем углу первого экрана */
