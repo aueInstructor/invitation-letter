@@ -15,12 +15,18 @@
 
 :root{
   --ink:#123024;      /* тёмный изумруд — акценты */
-  --paper:#FBF8F0;    /* тёплый крем — фон */
+  --paper:#FFFFFF;    /* белый — фон открытки */
   --brown:#6E553F;    /* тёплый коричневый */
   --gold:#7A6636;     /* золото — основной текст прописными */
-  --rose:#1E4D3B;     /* изумруд — заголовки, панно */
+  --rose:#48958D;     /* морская волна — заголовки, середина панно */
+  --rose-edge:#3B7A74;/* тот же цвет темнее — края панно и волны */
   --rose-lt:#9DBBA9;  /* светлая зелень — кольца-орнаменты */
-  --rose-pale:#E7F0EA;/* бледная мята — дальняя волна */
+
+  /* Заливка волнистых блоков: по краям (сверху и снизу) темнее,
+     к середине светлее. Волны залиты --rose-edge, поэтому стык
+     панно с волной не виден. */
+  --panno-fill:linear-gradient(
+     to bottom, var(--rose-edge) 0%, var(--rose) 50%, var(--rose-edge) 100%);
   --display:'Prata', Georgia, serif;
   --script:'KZ Good Vibes', 'Prata', cursive;
 
@@ -38,7 +44,7 @@
 
   --phone:390px;      /* ширина «экрана телефона» на компьютере */
   --bezel:8px;        /* толщина корпуса */
-  --backdrop:#0E241C; /* тёмный фон вокруг телефона */
+  --backdrop:var(--rose-edge); /* фон вокруг телефона — тёмный край градиента */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -91,7 +97,7 @@ img{max-width:100%;display:block}
   border:var(--bezel) solid #1c1c1c;
   border-radius:48px;
   pointer-events:none;z-index:200;
-  /* огромная тень заливает всё вокруг телефона тёмным фоном */
+  /* огромная тень заливает всё вокруг телефона фоном --backdrop */
   box-shadow:
     0 0 0 100vw var(--backdrop),
     inset 0 0 0 1px rgba(255,255,255,.10);
@@ -278,12 +284,12 @@ section.block > .wrap{position:relative;z-index:1}
 /* ═══════════ РОЗОВОЕ ПАННО ═══════════
    Волнистый верх и «подтёки» снизу — не картинки, а SVG,
    который рисуется кодом по настройкам CONFIG.decor.
-   Цвет берётся отсюда, из переменных --rose / --rose-pale. */
+   Цвет берётся отсюда, из переменной --rose. */
 .panel{
   position:relative;
   margin-block:var(--edge);
   padding:clamp(2rem,7cqw,3rem) 0 clamp(2.5rem,9cqw,3.5rem);
-  background:var(--rose);
+  background:var(--panno-fill);
   text-align:center;
   /* clip только по горизонтали: кольца-орнаменты не растягивают
      страницу вбок, но волнистые края сверху и снизу остаются видны */
@@ -291,7 +297,7 @@ section.block > .wrap{position:relative;z-index:1}
 }
 .panel-edge{
   position:absolute;left:0;width:100%;height:var(--edge);
-  display:block;pointer-events:none;fill:var(--rose);
+  display:block;pointer-events:none;fill:var(--rose-edge);
 }
 .panel-edge--top{top:0;transform:translateY(-99.5%)}
 /* нижний край — та же волна, отражённая по вертикали */
@@ -360,15 +366,14 @@ section.block > .wrap{position:relative;z-index:1}
 .panno{
   position:relative;margin-block:var(--edge);
   padding:clamp(3.5rem,13cqw,6rem) 0 clamp(2.5rem,9cqw,4rem);
-  background:var(--rose);
+  background:var(--panno-fill);
   text-align:center;
 }
 .panno .wave{
   position:absolute;left:0;width:100%;height:var(--edge);
   display:block;pointer-events:none;
 }
-.panno .wave-pale{top:0;transform:translateY(-118%);fill:var(--rose-pale)}
-.panno .wave-rose{top:0;transform:translateY(-99.5%);fill:var(--rose)}
+.panno .wave-rose{top:0;transform:translateY(-99.5%);fill:var(--rose-edge)}
 /* мандала в углу блока с отсчётом — медленно вращается, как кольца */
 .countdown-block{position:relative}
 .countdown-block > *:not(.mandala){position:relative;z-index:1}
@@ -386,6 +391,11 @@ section.block > .wrap{position:relative;z-index:1}
 .unit b{
   display:block;font-family:var(--script);font-weight:400;color:var(--rose);
   font-size:clamp(2.6rem,13cqw,4rem);line-height:1;font-variant-numeric:tabular-nums;
+  /* цифры в шрифте одной ширины, но браузер поджимает пары кернингом —
+     из-за этого отсчёт дёргался при смене секунд. Кернинг и лигатуры
+     выключены, min-width страхует на случай запасного шрифта. */
+  font-kerning:none;font-feature-settings:"kern" 0,"liga" 0;
+  min-width:2ch;text-align:center;
 }
 .unit span{
   display:block;font-family:var(--script);color:var(--rose);
@@ -401,7 +411,9 @@ section.block > .wrap{position:relative;z-index:1}
   position:relative;
   margin-top:var(--edge);
   padding:clamp(1.5rem,6cqw,2.5rem) 0 clamp(5rem,20cqw,9rem);
-  background:var(--rose);
+  /* у футера низ уходит за край экрана — там оставляем светлую середину,
+     чтобы не было тёмной полосы по нижней кромке */
+  background:linear-gradient(to bottom, var(--rose-edge) 0%, var(--rose) 60%);
   text-align:center;
 }
 
