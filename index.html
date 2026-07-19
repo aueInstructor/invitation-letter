@@ -34,13 +34,13 @@
 }
 
 :root{
-  --ink:#7A2B2B;      /* глубокий винный — акценты */
-  --paper:#FCFAF4;    /* тёплый крем — фон */
+  --ink:#5C4433;      /* тёмное какао — акценты */
+  --paper:#FCF9F3;    /* тёплый крем — фон */
   --brown:#6E553F;    /* тёплый коричневый */
-  --gold:#A49E73;     /* олива-золото — основной текст прописными */
-  --rose:#D98899;     /* пыльная роза — заголовки, панно */
-  --rose-lt:#EDB0BD;  /* роза светлее */
-  --rose-pale:#FBE8EC;/* самая светлая роза — дальняя волна */
+  --gold:#9A8468;     /* какао — основной текст прописными */
+  --rose:#C9A88E;     /* пудровый беж — заголовки, панно */
+  --rose-lt:#DEC5B0;  /* беж светлее */
+  --rose-pale:#F3E7DC;/* самый светлый беж — дальняя волна */
   --display:'Prata', Georgia, serif;
   --script:'KZ Good Vibes', 'Prata', cursive;
 
@@ -54,10 +54,11 @@
   --tint-ring:    var(--rose-lt);  /* большие кольца-орнаменты */
   --tint-mark:    var(--rose);     /* кольцо вокруг даты в календаре */
   --tint-mandala: var(--paper);    /* мандала на розовом панно */
+  --tint-strip:   var(--rose);     /* узорная лента-бордюр */
 
   --phone:390px;      /* ширина «экрана телефона» на компьютере */
   --bezel:8px;        /* толщина корпуса */
-  --backdrop:#2E1A1A; /* тёмный фон вокруг телефона */
+  --backdrop:#2A2019; /* тёмный фон вокруг телефона */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -252,10 +253,11 @@ section.block > .wrap{position:relative;z-index:1}
 .ghost-ring.l{left:-36%}
 .ghost-ring.r{right:-36%}
 
-/* лента-бордюр во всю ширину */
+/* лента-бордюр во всю ширину (тоже трафарет — цвет из --tint-strip) */
 .strip{
   width:100%;height:clamp(26px,7cqw,46px);
-  object-fit:cover;object-position:center;
+  --src:url('assets/border-strip.svg');--tint:var(--tint-strip);
+  -webkit-mask-size:auto 100%;mask-size:auto 100%;
 }
 
 /* сердечко-разделитель */
@@ -478,7 +480,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid curre
   </div>
 </header>
 
-<img class="strip" src="assets/border-strip.svg" alt="" aria-hidden="true">
+<span class="tint strip" aria-hidden="true"></span>
 
 <!-- ═══ ПРИГЛАШЕНИЕ (на белом) ═══ -->
 <section class="block">
@@ -523,8 +525,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid curre
     </div>
   </div>
 
-  <img class="strip" src="assets/border-strip.svg" alt="" aria-hidden="true"
-       style="margin-top:clamp(2.5rem,10cqw,4rem)">
+  <span class="tint strip" aria-hidden="true" style="margin-top:clamp(2.5rem,10cqw,4rem)"></span>
 
   <div class="wrap" style="margin-top:clamp(2.5rem,10cqw,4rem)">
     <h2 class="script" id="hCountdown" data-anim="up"></h2>
