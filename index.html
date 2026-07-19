@@ -198,27 +198,81 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
      дают гладкие переходы, а jitter гуляет высотой и шириной каждого
      горба, чтобы линия не выглядела штампованной синусоидой.
      Путь начинается левее нуля и кончается правее сотни — лишнее
-     обрезает сам SVG, зато по краям нет обрубленных горбов. */
-  function wavePath(humps, amp, shift, jitter, seed){
+     обрезает сам SVG, зато по краям нет обрубленных горбов.
+
+     Длина повтора. Волна плывёт вбок, и чтобы петля была незаметна,
+     рисунок обязан повторяться: сдвиг ровно на WAVE_PERIOD возвращает
+     линию саму в себя. Ширина блока — 100 единиц, то есть период равен
+     двум экранам. Это же число стоит в style.css, в кадрах wave-drift —
+     менять их надо вместе. */
+  const WAVE_PERIOD = 200;
+  const WAVE_SPAN   = 3;   // сколько периодов рисуем: с запасом влево и вправо
+
+  /* Заготовка волны: горбы одного периода. Их число обязано быть чётным —
+     горбы идут вверх-вниз по очереди, и при нечётном на стыке периода
+     встретились бы два одинаковых. Ширины растягиваем так, чтобы их сумма
+     была ровно WAVE_PERIOD, иначе повтор поедет.
+
+     Фаза дыхания у каждого горба своя и растёт вдоль волны: подъём
+     пробегает по гребням, как по воде, а не дёргает их разом. Случайной
+     её делать нельзя — на шести горбах случай легко сводит половину в
+     одну фазу, и они опускаются вместе. Небольшой разброс всё же
+     добавлен, чтобы не выглядело маршем.
+     Фаза привязана к горбу, а не к его копии на странице, поэтому все
+     три копии дышат одинаково и петля вбок остаётся незаметной. */
+  function buildWave(humps, amp, shift, jitter, seed, roll){
     const A = clamp01(amp) * 42;
     const J = clamp01(jitter);
-    const mid = 50;
     const half = 100 / (Math.max(0.5, humps) * 2);
     const rnd = prng(seed);
 
-    let x = -half * (1 + (shift || 0) % 2);
-    let y = mid + A;
+    const n = Math.max(2, Math.round(WAVE_PERIOD / half / 2) * 2);
+    const bumps = [];
+    let sum = 0;
+    for (let i = 0; i < n; i++){
+      const w = half * (1 + (rnd() * 2 - 1) * J * 0.45);   // ширина горба
+      const a = A * (1 - rnd() * J * 0.55);                // высота горба
+      bumps.push({ w, a, jit: (rnd() * 2 - 1) * 0.35 });
+      sum += w;
+    }
+    const k = WAVE_PERIOD / sum;
+    bumps.forEach(b => b.w *= k);
+
+    /* roll — сколько раз волна дыхания укладывается в период. Только целое:
+       на дробном фаза не сойдётся на стыке и появится рывок. */
+    const turns = Math.max(0, Math.round(roll || 0));
+    let at = 0;
+    bumps.forEach(b => {
+      at += b.w / 2;                                  // середина горба
+      b.phase = turns * 2 * Math.PI * at / WAVE_PERIOD + b.jit;
+      at += b.w / 2;
+    });
+
+    return { bumps, n, startX: -WAVE_PERIOD - half * ((shift || 0) % 2) };
+  }
+
+  /* Путь на момент времени t (в секундах). swell — до какой доли высоты
+     опадает гребень в нижней точке: 1 — не дышит вовсе. */
+  function waveD(wave, t, swell, period){
+    const { bumps, n, startX } = wave;
+    const mid = 50;
+    const drop = 1 - swell;
+    const amplAt = b => b.a * (1 - drop * (1 - Math.cos(t / period * Math.PI * 2 + b.phase)) / 2);
+
+    let x = startX;
+    /* стартовая высота — та, которой кончается период: последний горб
+       (нечётный по счёту) заканчивается внизу, на своей текущей высоте.
+       Поставь тут просто A — на стыке периода была бы ступенька */
+    let y = mid + amplAt(bumps[n - 1]);
     let up = 1;
-    const startX = x;
     let d = `M ${x.toFixed(2)} ${y.toFixed(2)}`;
 
-    while (x < 100 + half){
-      const w  = half * (1 + (rnd() * 2 - 1) * J * 0.45);   // ширина горба
-      const a  = A * (1 - rnd() * J * 0.55);                // высота горба
-      const x1 = x + w;
-      const y1 = mid - a * up;
-      d += ` C ${(x + w / 2).toFixed(2)} ${y.toFixed(2)},` +
-           ` ${(x1 - w / 2).toFixed(2)} ${y1.toFixed(2)},` +
+    for (let i = 0; i < n * WAVE_SPAN; i++){
+      const b = bumps[i % n];
+      const x1 = x + b.w;
+      const y1 = mid - amplAt(b) * up;
+      d += ` C ${(x + b.w / 2).toFixed(2)} ${y.toFixed(2)},` +
+           ` ${(x1 - b.w / 2).toFixed(2)} ${y1.toFixed(2)},` +
            ` ${x1.toFixed(2)} ${y1.toFixed(2)}`;
       x = x1; y = y1; up = -up;
     }
@@ -230,12 +284,35 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   const jitter = D.waveJitter ?? 0.4;
   const shift  = D.waveShift ?? 0.65;
 
+  /* Настройки дыхания лежат в style.css рядом со скоростью хода волны,
+     чтобы всё про волны правилось в одном месте */
+  const css    = getComputedStyle(document.documentElement);
+  const swell  = parseFloat(css.getPropertyValue('--wave-swell')) || 1;
+  const period = parseFloat(css.getPropertyValue('--wave-swell-time')) || 9;
+  const roll   = parseFloat(css.getPropertyValue('--wave-roll'));
+
   // у каждого края своё зерно — иначе все панели выглядели бы одинаково
-  document.querySelectorAll('.panel-edge, .wave').forEach((svg, i) => {
-    const isBottom = svg.classList.contains('panel-edge--bottom');
-    svg.querySelector('path').setAttribute('d',
-      wavePath(humps, amp, isBottom ? shift : 0, jitter, 1000 + i * 7919));
-  });
+  const waves = [...document.querySelectorAll('.panel-edge, .wave')].map((svg, i) => ({
+    path: svg.querySelector('path'),
+    wave: buildWave(humps, amp,
+                    svg.classList.contains('panel-edge--bottom') ? shift : 0,
+                    jitter, 1000 + i * 7919, isNaN(roll) ? 1 : roll),
+  }));
+
+  const draw = t => waves.forEach(w => w.path.setAttribute('d', waveD(w.wave, t, swell, period)));
+
+  /* Гребни дышат каждый со своей фазой, поэтому путь пересобирается
+     на каждом кадре. Ход волны вбок при этом остаётся на CSS. */
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches || swell >= 1;
+  if (still){
+    draw(0);
+  } else {
+    const t0 = performance.now();
+    (function tick(now){
+      draw((now - t0) / 1000);
+      requestAnimationFrame(tick);
+    })(t0);
+  }
 })();
 
 
