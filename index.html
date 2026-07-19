@@ -177,6 +177,12 @@ section.block{padding:clamp(5rem,12vw,8.5rem) 0}
   transform:rotate(45deg);margin:2.5rem auto 0}
 .invert .diamond{background:var(--gold-lt)}
 
+/* золотой филигранный орнамент-разделитель (свой SVG) */
+.orn{display:block;width:clamp(180px,44vw,270px);aspect-ratio:270/26;height:auto;
+  margin:1.3rem auto 0;color:var(--gold);overflow:visible}
+.invert .orn,.orn.on-dark{color:var(--gold-lt)}
+.orn--sep{margin-top:clamp(2rem,5vw,2.75rem)}
+
 /* ═══════════ МЕСТО ═══════════ */
 .place{text-align:center}
 .venue{font-family:var(--display);font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:.85rem;line-height:1.2}
@@ -279,6 +285,27 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
 </head>
 <body>
 
+<!-- ═══ ОРНАМЕНТ (свой SVG, используется как разделитель) ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="orn" viewBox="0 0 270 26">
+    <g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
+      <path d="M135 13 H70"/>
+      <path d="M70 13 q-11 0 -13 -7 q-1.5 -6 4.5 -6.5"/>
+      <path d="M70 13 q-11 0 -13 7 q-1.5 6 4.5 6.5"/>
+      <path d="M135 13 H200"/>
+      <path d="M200 13 q11 0 13 -7 q1.5 -6 -4.5 -6.5"/>
+      <path d="M200 13 q11 0 13 7 q1.5 6 -4.5 6.5"/>
+    </g>
+    <g fill="currentColor" stroke="none">
+      <circle cx="88" cy="13" r="1.5"/>
+      <circle cx="182" cy="13" r="1.5"/>
+      <path d="M135 4 l6.5 9 l-6.5 9 l-6.5 -9 z"/>
+    </g>
+    <path d="M135 0.5 l9.5 12.5 l-9.5 12.5 l-9.5 -12.5 z"
+          fill="none" stroke="currentColor" stroke-width="0.9" opacity=".45"/>
+  </symbol>
+</svg>
+
 <!-- ═══ ГЕРОЙ ═══ -->
 <header class="hero">
   <div id="seal" class="rise d1">
@@ -317,13 +344,14 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
     <div class="head reveal">
       <p class="eyebrow">Дорогие друзья и близкие</p>
       <h2>Мы женимся — и хотим,<br>чтобы вы были рядом</h2>
+      <svg class="orn"><use href="#orn"/></svg>
     </div>
     <p class="lede reveal">
       Этот день будет важен ровно настолько, насколько людей, которых мы любим,
       получится собрать в одной комнате. Приходите — будет тепло, шумно
       и по-настоящему.
     </p>
-    <span class="diamond reveal"></span>
+    <svg class="orn orn--sep reveal"><use href="#orn"/></svg>
   </div>
 </section>
 
@@ -333,6 +361,7 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
     <div class="head reveal">
       <p class="eyebrow">Где всё случится</p>
       <h2>Место</h2>
+      <svg class="orn"><use href="#orn"/></svg>
     </div>
     <p class="venue reveal" id="venueName"></p>
     <address class="reveal" id="venueAddress"></address>
@@ -345,7 +374,10 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
 <!-- ═══ ОТСЧЁТ ═══ -->
 <section class="block invert">
   <div class="wrap" style="text-align:center">
-    <div class="head reveal"><p class="eyebrow">До церемонии осталось</p></div>
+    <div class="head reveal">
+      <p class="eyebrow">До церемонии осталось</p>
+      <svg class="orn"><use href="#orn"/></svg>
+    </div>
     <div class="countdown reveal" id="countdown">
       <div class="unit"><b data-d>—</b><span>дней</span></div>
       <div class="unit"><b data-h>—</b><span>часов</span></div>
@@ -360,6 +392,7 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
     <div class="head reveal">
       <p class="eyebrow">Ответ</p>
       <h2>Подтвердите, что придёте</h2>
+      <svg class="orn"><use href="#orn"/></svg>
     </div>
     <p class="lede reveal">Заполните анкету до <strong id="rsvpDeadline"></strong> — нам важно знать точное число гостей.</p>
 
@@ -395,6 +428,7 @@ a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid current
 
 <footer>
   <div class="wrap">
+    <svg class="orn on-dark" style="margin:0 auto 1.6rem"><use href="#orn"/></svg>
     <p class="sig" id="footerSig"></p>
     <p class="eyebrow" id="footerDate"></p>
   </div>
