@@ -27,6 +27,13 @@
      панно с волной не виден. */
   --panno-fill:linear-gradient(
      to bottom, var(--rose-edge) 0%, var(--rose) 50%, var(--rose-edge) 100%);
+  /* Тень волнистых блоков. drop-shadow повторяет силуэт волны,
+     в отличие от box-shadow, который обвёл бы прямоугольник. */
+  /* две тени: основная вниз и слабая вверх — иначе верхний волнистый
+     край, который нависает над соседним блоком, остаётся без тени */
+  --panno-shadow:
+     drop-shadow(0 5px 20px rgb(9, 41, 38,.7))
+     drop-shadow(0 -4px 20px rgba(9, 41, 38,.04));
   --display:'Prata', Georgia, serif;
   --script:'KZ Good Vibes', 'Prata', cursive;
 
@@ -192,8 +199,10 @@ img{max-width:100%;display:block}
 }
 .hero .orn{position:absolute;width:clamp(150px,42cqw,260px);aspect-ratio:240/359;
   --tint:var(--tint-orn);z-index:0}
+/* картинки — точные зеркала друг друга, поэтому отступ от края
+   у обеих одинаковый: иначе орнаменты уезжают вбок по-разному */
 .hero .orn-tr{top:0;right:-8%}
-.hero .orn-ml{bottom:6%;left:-14%}
+.hero .orn-ml{bottom:6%;left:-8%}
 .hero .inner{position:relative;z-index:1;width:min(100% - 2.5rem,40rem);margin-inline:auto}
 
 .logo{text-align:center}
@@ -272,7 +281,12 @@ section.block > .wrap{position:relative;z-index:1}
   font-size:clamp(1.05rem,4.6cqw,1.4rem);
   aspect-ratio:1;display:grid;place-items:center;position:relative;z-index:0;
 }
-.cal-grid i.mark{color:var(--rose)}
+/* выбранный день: кружок залит как волнистые блоки, число белое */
+.cal-grid i.mark{color:var(--paper)}
+.cal-grid i.mark::after{
+  content:'';position:absolute;inset:6%;border-radius:50%;
+  background:var(--panno-fill);z-index:-1;
+}
 .cal-grid i.mark::before{
   content:'';position:absolute;inset:-16%;
   background-color:var(--tint-mark);
@@ -290,6 +304,7 @@ section.block > .wrap{position:relative;z-index:1}
   margin-block:var(--edge);
   padding:clamp(2rem,7cqw,3rem) 0 clamp(2.5rem,9cqw,3.5rem);
   background:var(--panno-fill);
+  filter:var(--panno-shadow);
   text-align:center;
   /* clip только по горизонтали: кольца-орнаменты не растягивают
      страницу вбок, но волнистые края сверху и снизу остаются видны */
@@ -367,6 +382,7 @@ section.block > .wrap{position:relative;z-index:1}
   position:relative;margin-block:var(--edge);
   padding:clamp(3.5rem,13cqw,6rem) 0 clamp(2.5rem,9cqw,4rem);
   background:var(--panno-fill);
+  filter:var(--panno-shadow);
   text-align:center;
 }
 .panno .wave{
@@ -414,6 +430,7 @@ section.block > .wrap{position:relative;z-index:1}
   /* у футера низ уходит за край экрана — там оставляем светлую середину,
      чтобы не было тёмной полосы по нижней кромке */
   background:linear-gradient(to bottom, var(--rose-edge) 0%, var(--rose) 60%);
+  filter:var(--panno-shadow);
   text-align:center;
 }
 
@@ -432,7 +449,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid curre
 @media print{
   #music,.scroll-hint,.ghost-ring{display:none}
   .hero{min-height:auto;padding:2rem 0}
-  .panel,.panno,.foot{background:#fff;margin:1.5rem 0}
+  .panel,.panno,.foot{background:#fff;margin:1.5rem 0;filter:none}
   .panel-edge,.panno .wave,.mandala{display:none}
   .on-rose,.on-rose .caps,.on-rose .script,.unit b,.unit span,.colon{color:#000}
   [data-anim]{opacity:1;transform:none}
