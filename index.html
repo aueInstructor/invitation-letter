@@ -28,14 +28,16 @@
 
 <style>
 :root{
-  --ink:#2A211C;        /* тёплый эспрессо — тёмные секции и основной текст */
-  --paper:#FBF7EF;      /* тёплая слоновая кость — фон */
-  --gold:#B18A4A;       /* приглушённое антикварное золото — линии и акценты */
-  --gold-dk:#8A6A2E;    /* золото для мелкого текста на светлом (контраст) */
-  --gold-lt:#D8BC85;    /* светлое золото — на тёмном фоне */
-  --ash:#8C8073;        /* тёплый серо-бежевый — приглушённый текст */
-  --hair:#E5DBCB;       /* тёплая волосяная линия */
-  --smoke:#F3ECDE;      /* тёплый тон секции */
+  --ink:#7A2B2B;        /* глубокий винный — тёмные секции, заголовки, кнопки */
+  --paper:#FCFAF4;      /* тёплый крем — фон */
+  --brown:#6E553F;      /* тёплый коричневый — основной текст */
+  --gold:#A49E73;       /* олива-золото — линии, орнаменты, акценты */
+  --gold-dk:#867F4F;    /* олива потемнее — мелкий текст на светлом (контраст) */
+  --gold-lt:#E8AEB9;    /* пыльная роза (светлая) — акценты на тёмном */
+  --rose:#D98899;       /* пыльная роза */
+  --ash:#9A8C7C;        /* приглушённый текст */
+  --hair:#E9DFD0;       /* тёплая волосяная линия */
+  --smoke:#F5EFE4;      /* тёплый тон секции */
   --display:'Prata', Georgia, serif;
   --body:'Manrope', system-ui, sans-serif;
 }
@@ -44,7 +46,7 @@
 html{scroll-behavior:smooth;scrollbar-gutter:stable;-webkit-text-size-adjust:100%}
 body{
   background:var(--paper);
-  color:var(--ink);
+  color:var(--brown);
   font-family:var(--body);
   font-weight:300;
   line-height:1.75;
@@ -75,15 +77,15 @@ body{
 .hero::before{
   content:'';position:absolute;inset:0;z-index:0;
   background:
-    radial-gradient(circle at 50% 32%, rgba(216,188,133,.12), transparent 58%),
+    radial-gradient(circle at 50% 32%, rgba(232,174,185,.16), transparent 58%),
     repeating-radial-gradient(circle at 0 0, rgba(255,255,255,.03) 0 1px, transparent 1px 3px);
   pointer-events:none;
 }
-/* тонкая золотая рамка — намёк на бумажную карточку-приглашение */
+/* тонкая рамка — намёк на бумажную карточку-приглашение */
 .hero::after{
   content:'';position:absolute;z-index:0;
   inset:clamp(12px,3vw,22px);
-  border:1px solid rgba(216,188,133,.28);
+  border:1px solid rgba(232,174,185,.30);
   pointer-events:none;
 }
 .hero > *{position:relative;z-index:1}
@@ -160,14 +162,15 @@ section.block{padding:clamp(5rem,12vw,8.5rem) 0}
 
 .head{text-align:center;margin-bottom:clamp(2.25rem,5vw,3.25rem)}
 .head h2{
-  font-family:var(--display);font-weight:400;
+  font-family:var(--display);font-weight:400;color:var(--ink);
   font-size:clamp(1.9rem,5.4vw,3rem);
   margin-top:1rem;letter-spacing:-.015em;line-height:1.18;
   text-wrap:balance;
 }
+.invert .head h2{color:var(--paper)}
 .lede{
   max-width:33rem;margin-inline:auto;text-align:center;
-  font-size:clamp(1.02rem,2.4vw,1.14rem);color:#252525;
+  font-size:clamp(1.02rem,2.4vw,1.14rem);color:var(--brown);
   text-wrap:pretty;
 }
 .invert .lede{color:rgba(251,247,239,.82)}
@@ -185,7 +188,7 @@ section.block{padding:clamp(5rem,12vw,8.5rem) 0}
 
 /* ═══════════ МЕСТО ═══════════ */
 .place{text-align:center}
-.venue{font-family:var(--display);font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:.85rem;line-height:1.2}
+.venue{font-family:var(--display);color:var(--ink);font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:.85rem;line-height:1.2}
 .place address{font-style:normal;color:var(--ash);margin-bottom:2.25rem;font-size:1.02rem}
 
 .btn{
