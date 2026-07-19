@@ -251,6 +251,15 @@ section.block > .wrap{position:relative;z-index:1}
   width:100%;height:clamp(26px,7cqw,46px);
   --src:url('assets/border-strip.svg');--tint:var(--tint-strip);
   -webkit-mask-size:auto 100%;mask-size:auto 100%;
+  /* узор повторяется, иначе при сдвиге у края появилась бы пустота */
+  -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+  animation:strip-drift 26s ease-in-out infinite alternate;
+}
+/* лента медленно уплывает влево, потом так же медленно возвращается:
+   alternate разворачивает ход, поэтому в петле нет рывка */
+@keyframes strip-drift{
+  from{-webkit-mask-position:0 center;        mask-position:0 center}
+  to  {-webkit-mask-position:-16cqw center;   mask-position:-16cqw center}
 }
 
 /* сердечко-разделитель */
