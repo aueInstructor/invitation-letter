@@ -57,6 +57,7 @@
   --tint-mark:    var(--rose);     /* кольцо вокруг даты в календаре */
   --tint-mandala: var(--rose);     /* мандала в блоке отсчёта */
   --tint-strip:   var(--rose);     /* узорная лента-бордюр */
+  --tint-mono:    var(--rose);     /* венок вокруг монограммы */
 
   --phone:390px;      /* ширина «экрана телефона» на компьютере */
   --bezel:8px;        /* толщина корпуса */
@@ -175,6 +176,8 @@ img{max-width:100%;display:block}
 @keyframes drip{0%,100%{transform:scaleY(.35);opacity:.4}50%{transform:scaleY(1);opacity:1}}
 .spin{animation:spin 26s linear infinite}
 .spin-fast{animation:spin 15s linear infinite}
+/* против часовой стрелки — тот же кадр, проигранный задом наперёд */
+.spin-back{animation:spin 26s linear infinite reverse}
 .pulse{animation:pulse 2.4s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
@@ -212,33 +215,83 @@ img{max-width:100%;display:block}
 
 /* ═══════════ ГЕРОЙ ═══════════ */
 .hero{
+  /* Отступ орнаментов от верхнего и нижнего края первого экрана.
+     Одно значение на оба, поэтому симметрия не ломается.
+     Положительное — орнаменты внутрь, к монограмме;
+     отрицательное — за край экрана; 0 — вплотную к краю. */
+  --orn-inset: 5cqw;
   position:relative;min-height:100svh;overflow:hidden;
   display:flex;flex-direction:column;justify-content:center;
-  /* верхний отступ освобождает место под орнамент в правом углу */
-  padding:clamp(16rem,66cqw,22rem) 0 clamp(11rem,44cqw,16rem);
+  /* отступы сверху и снизу одинаковые: иначе центр съезжает вниз
+     и монограмма стоит ближе к нижнему орнаменту, чем к верхнему */
+  padding-block:clamp(13rem,55cqw,19rem);
 }
-.hero .orn{position:absolute;width:clamp(150px,42cqw,260px);aspect-ratio:240/359;
+.hero .orn{position:absolute;width:clamp(150px,50cqw,260px);aspect-ratio:240/359;
   --tint:var(--tint-orn);z-index:0}
 /* картинки — точные зеркала друг друга, поэтому отступ от края
    у обеих одинаковый: иначе орнаменты уезжают вбок по-разному */
-.hero .orn-tr{top:0;right:-8%}
-.hero .orn-ml{bottom:6%;left:-8%}
+.hero .orn-tr{top:var(--orn-inset);right:-8%}
+.hero .orn-ml{bottom:var(--orn-inset);left:-8%}
 .hero .inner{position:relative;z-index:1;width:min(100% - 2.5rem,40rem);margin-inline:auto}
 
 /* монограмма в круге — над крупной надписью */
 .monogram{
-  --size:clamp(120px,34cqw,190px);
-  width:var(--size);height:var(--size);margin:0 auto clamp(1.4rem,6cqw,2.2rem);
-  border:1px solid var(--rose-lt);border-radius:50%;
+  --size:75cqw;   /* диаметр круга — 60% ширины колонки */
+  --mono-letter:.25;  /* размер букв: доля от диаметра круга.
+                        .3 — как было сначала, .5 — почти во весь круг.
+                        Если буква не влезает по ширине, скрипт сам
+                        уменьшит кегль — тогда помогает --mono-pad. */
+  --mono-pad:8%;     /* поля внутри круга: чем меньше, тем крупнее
+                        могут стать буквы, прежде чем упрутся */
+  --mono-amp:.5;    /* размер амперсанда: доля от кегля букв.
+                        1 — вровень с ними, .45 — вдвое мельче */
+  /* нижнего поля нет: под кругом ничего не рисуется, а лишний отступ
+     смещал бы центр содержимого вверх относительно героя */
+  --mono-disc:.915;   /* размер непрозрачной заглушки: доля от диаметра.
+                        .86 — край прячется под листьями венка;
+                        больше — заглушка вылезает наружу и режет орнамент,
+                        меньше — орнамент проступает внутри венка */
+  position:relative;
+  width:var(--size);height:var(--size);margin-inline:auto;
+  /* поля не дают монограмме упереться в обводку */
+  padding-inline:var(--mono-pad);
   display:grid;place-items:center;
 }
-.monogram span{
+/* заглушка: орнаменты проходят за кругом и внутрь не видны.
+   Отдельным кружком, а не фоном всего блока, — иначе она была бы
+   ровно по внешнему краю венка и обрезала бы орнамент по его прозрачной части */
+.monogram::before{
+  content:'';position:absolute;top:50%;left:50%;
+  width:calc(var(--size) * var(--mono-disc));aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;background:var(--paper);
+}
+/* венок вместо простой обводки — трафарет, цвет из --tint-mono */
+.mono-ring{
+  position:absolute;inset:0;
+  --src:url('assets/circle.webp');--tint:var(--tint-mono);
+  /* медленно вращается против часовой стрелки; 90s — период оборота */
+  animation:spin 90s linear infinite reverse;
+}
+.monogram > span:not(.mono-ring){
   font-family:var(--script);color:var(--rose);
-  font-size:calc(var(--size) * .3);line-height:1;white-space:nowrap;
+  font-size:calc(var(--size) * var(--mono-letter));line-height:1;white-space:nowrap;
+  /* по диагонали: первая буква левее и выше, вторая правее и ниже,
+     амперсанд между ними. --mono-gap — расстояние между строками,
+     --mono-spread — насколько буквы разъезжаются вбок */
+  --mono-gap:.02em;
+  --mono-spread:.5em;
+  display:flex;flex-direction:column;align-items:center;gap:var(--mono-gap);
   /* цифры и буквы садятся ниже середины круга — та же поправка,
      что и в календаре, только на глаз крупнее */
   transform:translateY(-.04em);
 }
+#monogram i{font-style:normal}
+#monogram i:first-child{transform:translateX(calc(var(--mono-spread) * -1))}
+#monogram i:last-child {transform:translateX(var(--mono-spread))}
+/* связка мельче букв — доля от их кегля */
+/* размер связки — в --mono-amp, доля от кегля букв */
+#monogram .amp{font-size:calc(1em * var(--mono-amp));opacity:.85;transform:none}
 /* видно только экранному диктору */
 .sr-only{
   position:absolute;width:1px;height:1px;overflow:hidden;

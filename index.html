@@ -62,6 +62,7 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
 
   <div class="inner">
     <div class="monogram" data-anim="zoom" aria-hidden="true">
+      <span class="tint mono-ring"></span>
       <span id="monogram"></span>
     </div>
     <!-- заголовок страницы остаётся для поиска и экранного диктора,
@@ -115,7 +116,7 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
   <span class="tint strip strip--right" aria-hidden="true" style="margin-top:clamp(2.5rem,10cqw,4rem)"></span>
 
   <div class="wrap countdown-block" style="margin-top:clamp(2.5rem,10cqw,4rem)">
-    <span class="tint mandala spin" aria-hidden="true"></span>
+    <span class="tint mandala spin-back" aria-hidden="true"></span>
     <h2 class="script" id="hCountdown" data-anim="up"></h2>
     <div class="countdown" id="countdown" data-anim="up">
       <div class="unit"><b data-d>00</b><span data-unit="0"></span></div>
@@ -275,8 +276,14 @@ function applyLang(){
   set('logoTitle', logo.title);
   // монограмма в круге: берём из конфига, иначе — первые буквы имён
   // (logo.title остаётся невидимым заголовком страницы)
-  set('monogram', logo.monogram ||
-      `${(couple.one || '')[0] || ''} & ${(couple.two || '')[0] || ''}`);
+  const mono = logo.monogram ||
+      `${(couple.one || '')[0] || ''} & ${(couple.two || '')[0] || ''}`;
+  // части монограммы разносим отдельными элементами: расстояние между
+  // ними задаёт --mono-gap в style.css, а не пробелы в тексте
+  $('monogram').innerHTML = mono
+      .split('&')
+      .map(p => `<i>${p.trim()}</i>`)
+      .join('<i class="amp">&amp;</i>');
 
   // приглашение
   set('salutation', L.invite.salutation);
@@ -324,7 +331,7 @@ function applyLang(){
   // адрес
   set('hAddress', L.headings.address);
   $('venueAddress').innerHTML = L.venue.address.join('<br>');
-  set('venueName', `"${L.venue.name}"`);
+  set('venueName', `«${L.venue.name}»`);
   set('venueKind', L.venue.kind);
   set('mapLink', L.venue.mapButton);
   attr('mapLink', 'href', mapLink);
@@ -364,7 +371,7 @@ function applyLang(){
 }
 
 /* строки, которые всегда должны стоять в одну строку */
-const FIT_ONE_LINE = ['hosts'];
+const FIT_ONE_LINE = ['hosts', 'monogram'];
 
 /* Эти строки должны стоять в одну строку при любой длине.
    Переносить нечему — вместо этого уменьшаем кегль, пока строка не
@@ -374,8 +381,12 @@ function fitOneLine(id){
   const el = $(id);
   if (!el) return;
   el.style.fontSize = '';                       // вернуть размер из CSS
-  const room = el.parentElement.clientWidth;
-  if (!room) return;
+  const box = el.parentElement, cs = getComputedStyle(box);
+  // clientWidth включает поля родителя — вычитаем их, иначе строка
+  // упрётся в край (у монограммы это край круга)
+  const room = box.clientWidth
+             - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  if (!(room > 0)) return;
   let size = parseFloat(getComputedStyle(el).fontSize);
   const min = size * 0.3;                       // ниже не опускаемся
   while (el.scrollWidth > room && size > min){
