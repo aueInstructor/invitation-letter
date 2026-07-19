@@ -6,10 +6,12 @@
    в блоке :root — палитра и цвета картинок.
    ══════════════════════════════════════════════════════════════ */
 
-/* каллиграфический шрифт с кириллицей — лежит рядом, в assets/ */
+/* Каллиграфия с казахскими буквами — файл лежит рядом, в assets/.
+   Shelley KZ — та же гарнитура, что в приглашении-образце SYMBAT.
+   Прежний KZGoodVibes.ttf остался в assets/ на случай возврата. */
 @font-face{
-  font-family:'KZ Good Vibes';
-  src:url('assets/KZGoodVibes.ttf') format('truetype');
+  font-family:'Shelley KZ';
+  src:url('assets/ShelleyKZ.woff') format('woff');
   font-weight:400;font-style:normal;font-display:swap;
 }
 
@@ -35,7 +37,7 @@
      drop-shadow(0 5px 10px rgb(9, 41, 38,.7))
      drop-shadow(0 -4px 10px rgba(9, 41, 38,.04));
   --display:'Prata', Georgia, serif;
-  --script:'KZ Good Vibes', 'Prata', cursive;
+  --script:'Shelley KZ', 'Prata', cursive;
 
   --edge:max(96px, 23cqw);  /* высота волнистого края панно */
 
@@ -262,15 +264,21 @@ section.block > .wrap{position:relative;z-index:1}
   animation:strip-left 60s linear infinite;
 }
 .strip--right{animation-name:strip-right}
+/* background-position дублирует mask-position: при открытии с диска
+   лента показывается фоном, и без этой строки она стояла бы на месте */
 @keyframes strip-left{
-  from{-webkit-mask-position:0 center; mask-position:0 center}
+  from{-webkit-mask-position:0 center; mask-position:0 center;
+       background-position:0 center}
   to  {-webkit-mask-position:calc(var(--strip-tile) * -1) center;
-               mask-position:calc(var(--strip-tile) * -1) center}
+               mask-position:calc(var(--strip-tile) * -1) center;
+       background-position:calc(var(--strip-tile) * -1) center}
 }
 @keyframes strip-right{
-  from{-webkit-mask-position:0 center; mask-position:0 center}
+  from{-webkit-mask-position:0 center; mask-position:0 center;
+       background-position:0 center}
   to  {-webkit-mask-position:var(--strip-tile) center;
-               mask-position:var(--strip-tile) center}
+               mask-position:var(--strip-tile) center;
+       background-position:var(--strip-tile) center}
 }
 
 /* сердечко-разделитель */
@@ -301,14 +309,17 @@ section.block > .wrap{position:relative;z-index:1}
   font-size:clamp(1.05rem,4.6cqw,1.4rem);
   aspect-ratio:1;display:grid;place-items:center;position:relative;z-index:0;
 }
-/* выбранный день: кружок залит как волнистые блоки, число белое */
-.cal-grid i.mark{color:var(--paper)}
-.cal-grid i.mark::after{
-  content:'';position:absolute;inset:6%;border-radius:50%;
-  background:var(--panno-fill);z-index:-1;
-}
+/* Оптическое центрирование. Браузер ставит по центру строку целиком,
+   а у неё подъём (19/20em) заметно больше высоты цифр (11/20em) — над
+   числом остаётся больше воздуха, чем под ним, и оно кажется осевшим.
+   Поднимаем на разницу; кольцо остаётся по центру ячейки. */
+.cal-grid i span{display:block;line-height:1;transform:translateY(-.148em)}
+/* выбранный день: только пульсирующая обводка, без заливки */
+.cal-grid i.mark{color:var(--rose)}
 .cal-grid i.mark::before{
-  content:'';position:absolute;inset:-16%;
+  /* кольцо в картинке занимает 97% кадра — при inset:0 оно ровно
+     по краю ячейки, вокруг числа */
+  content:'';position:absolute;inset:0;
   background-color:var(--tint-mark);
   -webkit-mask:url('assets/glitter-ring.webp') center/contain no-repeat;
           mask:url('assets/glitter-ring.webp') center/contain no-repeat;
@@ -359,14 +370,14 @@ section.block > .wrap{position:relative;z-index:1}
   background:linear-gradient(90deg,
      transparent, rgba(255,255,255,.45), transparent);
   transform:skewX(-20deg) translateX(0);
-  animation:pill-shine 5s ease-in-out infinite;
+  animation:pill-shine 2.5s ease-in-out infinite;
   pointer-events:none;z-index:-1;
 }
 /* проезд занимает лишь четверть цикла, остальное время полоса ждёт
    за правым краем — отсюда ритм «сверкнула — пауза», а не мельтешение */
 @keyframes pill-shine{
   0%       {transform:skewX(-20deg) translateX(0)}
-  26%, 100%{transform:skewX(-20deg) translateX(1000%)}
+  100%, 100%{transform:skewX(-20deg) translateX(1000%)}
 }
 
 /* ═══════════ АНКЕТА ═══════════ */
@@ -383,6 +394,9 @@ section.block > .wrap{position:relative;z-index:1}
   text-transform:uppercase;letter-spacing:.05em;color:var(--rose);
   font-size:clamp(.74rem,3.2cqw,.88rem);line-height:1.35;
 }
+/* без подсказки отступ от поля имени задавали её поля — возвращаем его,
+   иначе первый вариант ответа прилипает к полю */
+.rsvp-hint[hidden] + #rsvpOptions{margin-top:clamp(1.2rem,5cqw,1.6rem)}
 .choice{
   display:flex;align-items:center;gap:1rem;cursor:pointer;
   padding:.45rem 0;position:relative;
@@ -492,3 +506,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid curre
   .on-rose,.on-rose .caps,.on-rose .script,.unit b,.unit span,.colon{color:#000}
   [data-anim]{opacity:1;transform:none}
 }
+
+
+/* ═══════════ ЗАПАСНОЙ ПОКАЗ КАРТИНОК ПРИ ОТКРЫТИИ С ДИСКА ═══════════
+   На file:// маска считается ресурсом «чужого источника» и отбрасывается —
+   элемент остаётся залитым цветом, но обрезанным в ноль, то есть невидимым.
+   Здесь маска отключается, картинка показывается фоном, а фильтр
+   перекрашивает белый силуэт в цвет, близкий к --rose. Цвет приблизительный:
+   это лишь для того, чтобы видеть анимации локально. По http(s) блок не
+   срабатывает, и всё работает обычным образом, через маски. */
+.local .tint,
+.local .cal-grid i.mark::before{
+  -webkit-mask:none;mask:none;
+  background-color:transparent;
+  background-position:center;background-size:contain;background-repeat:no-repeat;
+  background-image:var(--src);
+  filter:invert(45%) sepia(30%) saturate(520%) hue-rotate(129deg) brightness(92%);
+}
+.local .cal-grid i.mark::before{background-image:url('assets/glitter-ring.webp')}
+.local .strip{background-size:auto 100%;background-repeat:repeat-x}

@@ -26,6 +26,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Prata&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
+<script>
+/* Локальный просмотр: при открытии файла с диска (file://) браузер
+   запрещает CSS-маски как «чужой источник», и покрашенные детали
+   пропадают. Метка local включает запасное отображение картинок —
+   см. конец style.css. На сайте по http(s) ничего не меняется. */
+if (location.protocol === 'file:') document.documentElement.classList.add('local');
+</script>
 </head>
 <body>
 
@@ -291,7 +298,9 @@ function applyLang(){
                    target.getMonth() === calendar.month - 1) ? target.getDate() : -1;
 
   let cells = '<i></i>'.repeat(lead);
-  for (let d = 1; d <= days; d++) cells += `<i class="${d === markDay ? 'mark' : ''}">${d}</i>`;
+  // число в отдельном span: его чуть приподнимает CSS, чтобы оно
+  // стояло по оптическому центру ячейки (см. .cal-grid i span)
+  for (let d = 1; d <= days; d++) cells += `<i class="${d === markDay ? 'mark' : ''}"><span>${d}</span></i>`;
   $('calGrid').innerHTML = cells;
 
   // отсчёт
@@ -312,6 +321,8 @@ function applyLang(){
   set('hRsvp', L.headings.rsvp);
   set('rsvpPrompt', L.rsvp.prompt);
   set('rsvpHint', L.rsvp.hint);
+  // пустая подсказка не должна занимать место под полем
+  $('rsvpHint').hidden = !L.rsvp.hint;
   set('rsvpSubmit', L.rsvp.submit);
   attr('guestName', 'placeholder', L.rsvp.namePlaceholder);
   set('rsvpDeadline', (L.rsvp.deadlineNote || '').replace('{date}', L.rsvp.deadline));
