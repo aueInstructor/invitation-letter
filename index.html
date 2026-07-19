@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+
+<!--
+  ╔════════════════════════════════════════════════════════════════╗
+  ║  ВСЁ, ЧТО НУЖНО МЕНЯТЬ, ЛЕЖИТ В ФАЙЛЕ  config.js                ║
+  ║  Откройте его и впишите свои данные: имена, дату, место,        ║
+  ║  ссылку на карту, срок ответа и адрес формы для ответов.        ║
+  ╚════════════════════════════════════════════════════════════════╝
+-->
+
+<!-- заголовок и превью-теги проставляются из CONFIG при загрузке -->
+<title>Свадьба</title>
+<meta name="description" id="metaDescription" content="">
+<meta property="og:type" content="website">
+<meta property="og:title" id="ogTitle" content="">
+<meta property="og:description" id="ogDescription" content="">
+<meta property="og:locale" content="ru_RU">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0A0A'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#0A0A0A;
+  --paper:#FFFFFF;
+  --ash:#787878;
+  --hair:#DCDCDC;
+  --smoke:#F4F4F4;
+  --display:'Prata', Georgia, serif;
+  --body:'Manrope', system-ui, sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scrollbar-gutter:stable;-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-weight:300;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--ink);color:var(--paper)}
+.wrap{width:min(100% - 3rem, 58rem);margin-inline:auto}
+
+.eyebrow{
+  font-size:.66rem;letter-spacing:.36em;text-transform:uppercase;
+  color:var(--ash);font-weight:500;
+}
+
+/* ═══════════ ГЕРОЙ (инвертированный) ═══════════ */
+.hero{
+  position:relative;
+  min-height:100svh;
+  background:var(--ink);
+  color:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2.25rem;
+  padding:6rem 1.5rem 5rem;
+  text-align:center;
+  overflow:hidden;
+}
+/* мягкое зерно, чтобы чёрный не был плоским */
+.hero::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255,255,255,.10), transparent 58%),
+    repeating-radial-gradient(circle at 0 0, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
+  pointer-events:none;
+}
+/* тонкая рамка — намёк на бумажную карточку-приглашение */
+.hero::after{
+  content:'';position:absolute;z-index:0;
+  inset:clamp(12px,3vw,22px);
+  border:1px solid rgba(255,255,255,.16);
+  pointer-events:none;
+}
+.hero > *{position:relative;z-index:1}
+
+#seal{width:clamp(158px,38vw,206px);height:clamp(158px,38vw,206px);position:relative}
+#seal svg{width:100%;height:100%;display:block}
+#seal .ring{animation:spin 46s linear infinite;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+#seal .ring text{
+  font-family:var(--body);font-size:6px;letter-spacing:2.7px;
+  text-transform:uppercase;fill:#FFF;
+}
+#seal circle{stroke:#FFF}
+.monogram{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--display);font-size:clamp(2.3rem,8vw,3rem);
+}
+.monogram span{font-size:.48em;vertical-align:.4em;margin:0 .05em;opacity:.6}
+
+.names{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(3rem,13vw,7rem);
+  line-height:.94;letter-spacing:-.02em;
+  text-wrap:balance;
+}
+.names .amp{
+  display:block;font-size:.3em;margin:.5rem 0;
+  color:rgba(255,255,255,.55);
+}
+.hero-meta{display:flex;align-items:center;gap:1.15rem;flex-wrap:wrap;justify-content:center}
+.hero-meta .eyebrow{color:rgba(255,255,255,.72)}
+.hero-meta .bar{width:2.25rem;height:1px;background:rgba(255,255,255,.45)}
+
+.scroll-hint{
+  position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);
+  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+}
+.scroll-hint::after{
+  content:'';display:block;width:1px;height:2.2rem;margin:.7rem auto 0;
+  background:linear-gradient(rgba(255,255,255,.6),transparent);
+  animation:drip 2.6s ease-in-out infinite;transform-origin:top;
+}
+@keyframes drip{0%,100%{transform:scaleY(.35);opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* появление при загрузке */
+.rise{opacity:0;transform:translateY(22px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.3,1)}
+body.loaded .rise{opacity:1;transform:none}
+body.loaded .rise.d1{transition-delay:.15s}
+body.loaded .rise.d2{transition-delay:.35s}
+body.loaded .rise.d3{transition-delay:.55s}
+body.loaded .rise.d4{transition-delay:.8s}
+
+/* ═══════════ БЕГУЩАЯ СТРОКА ═══════════ */
+.ribbon{
+  border-block:1px solid var(--hair);
+  padding:1.05rem 0;overflow:hidden;white-space:nowrap;
+  background:var(--paper);
+}
+.ribbon-track{display:inline-flex;animation:marquee 34s linear infinite;will-change:transform}
+.ribbon:hover .ribbon-track{animation-play-state:paused}
+.ribbon-track span{
+  font-family:var(--display);font-size:clamp(1.1rem,3.2vw,1.6rem);
+  padding-right:2.5rem;
+}
+.ribbon-track span i{font-style:normal;color:var(--hair);padding-left:2.5rem}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ═══════════ СЕКЦИИ ═══════════ */
+section.block{padding:clamp(5rem,12vw,8.5rem) 0}
+.block.smoke{background:var(--smoke)}
+.block.invert{background:var(--ink);color:var(--paper)}
+.block.invert .eyebrow{color:rgba(255,255,255,.6)}
+
+.head{text-align:center;margin-bottom:clamp(2.25rem,5vw,3.25rem)}
+.head h2{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(1.9rem,5.4vw,3rem);
+  margin-top:1rem;letter-spacing:-.015em;line-height:1.18;
+  text-wrap:balance;
+}
+.lede{
+  max-width:33rem;margin-inline:auto;text-align:center;
+  font-size:clamp(1.02rem,2.4vw,1.14rem);color:#252525;
+  text-wrap:pretty;
+}
+.invert .lede{color:rgba(255,255,255,.8)}
+
+/* декоративный ромб-разделитель */
+.diamond{display:block;width:7px;height:7px;background:var(--ink);
+  transform:rotate(45deg);margin:2.5rem auto 0}
+.invert .diamond{background:var(--paper)}
+
+/* ═══════════ МЕСТО ═══════════ */
+.place{text-align:center}
+.venue{font-family:var(--display);font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:.85rem;line-height:1.2}
+.place address{font-style:normal;color:var(--ash);margin-bottom:2.25rem;font-size:1.02rem}
+
+.btn{
+  display:inline-block;position:relative;overflow:hidden;
+  border:1px solid var(--ink);background:transparent;
+  padding:1rem 2.4rem;
+  font-family:var(--body);font-size:.7rem;font-weight:600;
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink);text-decoration:none;cursor:pointer;
+  transition:color .35s ease;isolation:isolate;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;background:var(--ink);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform .35s cubic-bezier(.4,0,.2,1);z-index:-1;
+}
+.btn span{position:relative;z-index:1}
+.btn:hover,.btn:focus-visible{color:var(--paper)}
+.btn:hover::after,.btn:focus-visible::after{transform:scaleY(1)}
+
+/* ═══════════ ОТСЧЁТ ═══════════ */
+.countdown{display:flex;gap:clamp(1.75rem,8vw,4.5rem);justify-content:center;align-items:flex-start}
+.unit{text-align:center;min-width:3.5rem}
+.unit b{
+  display:block;font-family:var(--display);font-weight:400;
+  font-size:clamp(2.6rem,10vw,4.2rem);line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.unit span{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.6);display:block;margin-top:.8rem}
+
+/* ═══════════ АНКЕТА ═══════════ */
+.rsvp{max-width:29rem;margin:2.75rem auto 0;text-align:left}
+.field{margin-bottom:2.25rem}
+.field > .eyebrow{display:block;margin-bottom:1rem}
+.rsvp input[type=text]{
+  width:100%;font-family:var(--display);font-size:1.35rem;color:var(--ink);
+  background:transparent;border:0;border-bottom:1px solid var(--ink);
+  padding:.5rem 0 .75rem;border-radius:0;
+}
+.rsvp input[type=text]::placeholder{color:#C4C4C4}
+.rsvp input[type=text]:focus{outline:0;border-bottom-width:2px}
+
+.choice{
+  display:block;position:relative;cursor:pointer;
+  padding:1.05rem 1.1rem 1.05rem 3.1rem;
+  border:1px solid var(--hair);margin-bottom:.6rem;background:var(--paper);
+  transition:border-color .3s ease,transform .3s ease;
+}
+.choice:hover{border-color:var(--ash);transform:translateX(3px)}
+.choice input{position:absolute;opacity:0;width:0;height:0}
+.choice .dot{
+  position:absolute;left:1.1rem;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;border:1px solid var(--ink);border-radius:50%;
+}
+.choice .dot::after{
+  content:'';position:absolute;inset:3px;border-radius:50%;background:var(--ink);
+  transform:scale(0);transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+}
+.choice input:checked ~ .dot::after{transform:scale(1)}
+.choice input:checked ~ .txt{font-weight:500}
+.choice:has(input:checked){border-color:var(--ink)}
+.choice input:focus-visible ~ .dot{outline:2px solid var(--ink);outline-offset:3px}
+.choice .txt{font-size:.98rem}
+
+.rsvp .btn{width:100%;text-align:center}
+.form-note{font-size:.82rem;color:var(--ash);text-align:center;margin-top:1rem;min-height:1.3rem}
+.thanks{text-align:center;font-family:var(--display);font-size:clamp(1.35rem,4vw,1.8rem);padding:2.5rem 0;line-height:1.45}
+
+/* ═══════════ ПОДВАЛ ═══════════ */
+footer{background:var(--ink);color:var(--paper);padding:4.5rem 0 5rem;text-align:center}
+footer .sig{font-family:var(--display);font-size:1.7rem;margin-bottom:1rem}
+footer .eyebrow{color:rgba(255,255,255,.5)}
+
+/* появление при скролле */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .95s ease,transform .95s cubic-bezier(.2,.7,.3,1)}
+.reveal.on{opacity:1;transform:none}
+
+a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+  .reveal,.rise{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+
+@media print{
+  .hero{min-height:auto;background:#fff;color:#000;padding:2rem 0}
+  .hero::before,.hero::after,.scroll-hint{display:none}
+  #seal circle{stroke:#000}.monogram,.names,.hero-meta .eyebrow{color:#000}
+  .hero-meta .bar{background:#000}
+  .ribbon,.block.invert{background:#fff;color:#000}
+  .block.invert .eyebrow,.invert .lede,.unit span,footer .eyebrow{color:#333}
+  footer{background:#fff;color:#000}
+  .btn{border-color:#000;color:#000}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ ГЕРОЙ ═══ -->
+<header class="hero">
+  <div id="seal" class="rise d1">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <path id="circlePath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/>
+      </defs>
+      <circle cx="50" cy="50" r="46" fill="none" stroke-width=".55"/>
+      <circle cx="50" cy="50" r="29" fill="none" stroke-width=".35"/>
+      <g class="ring">
+        <text><textPath href="#circlePath" startOffset="0%" id="sealText"></textPath></text>
+      </g>
+    </svg>
+    <div class="monogram" id="monogram"></div>
+  </div>
+
+  <h1 class="names rise d2" id="heroNames"></h1>
+
+  <div class="hero-meta rise d3">
+    <span class="bar"></span>
+    <span class="eyebrow" id="heroMeta"></span>
+    <span class="bar"></span>
+  </div>
+
+  <div class="scroll-hint rise d4">вниз</div>
+</header>
+
+<!-- ═══ БЕГУЩАЯ СТРОКА ═══ -->
+<div class="ribbon" aria-hidden="true">
+  <div class="ribbon-track" id="ribbonTrack"></div>
+</div>
+
+<!-- ═══ ОБРАЩЕНИЕ ═══ -->
+<section class="block">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Дорогие друзья и близкие</p>
+      <h2>Мы женимся — и хотим,<br>чтобы вы были рядом</h2>
+    </div>
+    <p class="lede reveal">
+      Этот день будет важен ровно настолько, насколько людей, которых мы любим,
+      получится собрать в одной комнате. Приходите — будет тепло, шумно
+      и по-настоящему.
+    </p>
+    <span class="diamond reveal"></span>
+  </div>
+</section>
+
+<!-- ═══ МЕСТО ═══ -->
+<section class="block smoke">
+  <div class="wrap place">
+    <div class="head reveal">
+      <p class="eyebrow">Где всё случится</p>
+      <h2>Место</h2>
+    </div>
+    <p class="venue reveal" id="venueName"></p>
+    <address class="reveal" id="venueAddress"></address>
+    <p class="reveal">
+      <a class="btn" id="mapLink" href="#" target="_blank" rel="noopener"><span>Открыть на карте</span></a>
+    </p>
+  </div>
+</section>
+
+<!-- ═══ ОТСЧЁТ ═══ -->
+<section class="block invert">
+  <div class="wrap" style="text-align:center">
+    <div class="head reveal"><p class="eyebrow">До церемонии осталось</p></div>
+    <div class="countdown reveal" id="countdown">
+      <div class="unit"><b data-d>—</b><span>дней</span></div>
+      <div class="unit"><b data-h>—</b><span>часов</span></div>
+      <div class="unit"><b data-m>—</b><span>минут</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ АНКЕТА ═══ -->
+<section class="block">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="eyebrow">Ответ</p>
+      <h2>Подтвердите, что придёте</h2>
+    </div>
+    <p class="lede reveal">Заполните анкету до <strong id="rsvpDeadline"></strong> — нам важно знать точное число гостей.</p>
+
+    <form class="rsvp reveal" id="rsvpForm" novalidate>
+      <div class="field">
+        <span class="eyebrow">Ваше имя и фамилия</span>
+        <input type="text" name="name" id="guestName" placeholder="Асель Нурланова" autocomplete="name" required>
+      </div>
+
+      <div class="field">
+        <span class="eyebrow">Придёте ли вы?</span>
+        <label class="choice">
+          <input type="radio" name="answer" value="Да, приду" required>
+          <span class="dot"></span><span class="txt">Да, приду</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="answer" value="Приду с супругом / супругой">
+          <span class="dot"></span><span class="txt">Приду с супругом / супругой</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="answer" value="К сожалению, не приду">
+          <span class="dot"></span><span class="txt">К сожалению, не приду</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn" id="rsvpSubmit"><span>Отправить ответ</span></button>
+      <p class="form-note" id="rsvpNote"></p>
+    </form>
+
+    <div class="thanks" id="rsvpThanks" hidden></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="sig" id="footerSig"></p>
+    <p class="eyebrow" id="footerDate"></p>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+/* ─── применяем CONFIG к странице ─── */
+(function applyConfig(){
+  const { couple, date, city, venue, rsvp } = CONFIG;
+  const initials = couple.one.charAt(0) + couple.two.charAt(0);
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const attr = (id, a, v) => { const el = document.getElementById(id); if (el) el.setAttribute(a, v); };
+
+  const pageTitle = `${couple.one} & ${couple.two} — ${date.long}`;
+  const desc = `Приглашение на свадьбу. ${couple.one} и ${couple.two}, ${date.long}, ${city}.`;
+  document.title = pageTitle;
+  attr('metaDescription', 'content', desc);
+  attr('ogTitle', 'content', pageTitle);
+  attr('ogDescription', 'content', desc);
+
+  // штамп-печать
+  set('sealText', `приглашение на свадьбу · ${date.short} · ${city.toLowerCase()} · `);
+  document.getElementById('monogram').innerHTML =
+    `${couple.one.charAt(0)}<span>&amp;</span>${couple.two.charAt(0)}`;
+
+  // герой
+  document.getElementById('heroNames').innerHTML =
+    `${couple.one}<span class="amp">&amp;</span>${couple.two}`;
+  set('heroMeta', `${date.long} · ${city}`);
+
+  // бегущая строка (дублируем для бесшовной прокрутки)
+  const chunk =
+    `<span>${couple.one} &amp; ${couple.two}<i>◆</i>${date.long}<i>◆</i>${city}<i>◆</i>будем рады вам<i>◆</i></span>`;
+  document.getElementById('ribbonTrack').innerHTML = chunk + chunk;
+
+  // место
+  set('venueName', venue.name);
+  document.getElementById('venueAddress').innerHTML = venue.address.join('<br>');
+  attr('mapLink', 'href', venue.mapLink);
+
+  // отсчёт
+  attr('countdown', 'data-date', date.iso);
+
+  // анкета
+  set('rsvpDeadline', rsvp.deadline);
+
+  // подвал
+  set('footerSig', `${couple.one.charAt(0)} & ${couple.two.charAt(0)}`);
+  set('footerDate', date.footer);
+})();
+
+/* появление секций при скролле */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+}, { threshold: .15 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* запуск анимации первого экрана */
+requestAnimationFrame(() => document.body.classList.add('loaded'));
+
+/* обратный отсчёт */
+const cd = document.getElementById('countdown');
+const target = new Date(cd.dataset.date).getTime();
+function tick(){
+  const diff = target - Date.now();
+  if (diff <= 0){
+    cd.innerHTML = '<p class="lede" style="font-family:var(--display);font-size:1.6rem">Сегодня тот самый день</p>';
+    return;
+  }
+  cd.querySelector('[data-d]').textContent = Math.floor(diff / 864e5);
+  cd.querySelector('[data-h]').textContent = String(Math.floor(diff % 864e5 / 36e5)).padStart(2,'0');
+  cd.querySelector('[data-m]').textContent = String(Math.floor(diff % 36e5 / 6e4)).padStart(2,'0');
+}
+tick();
+setInterval(tick, 30000);
+
+/* ─── анкета ─── */
+const FORM_ENDPOINT = CONFIG.rsvp.formEndpoint;
+
+const form = document.getElementById('rsvpForm');
+const note = document.getElementById('rsvpNote');
+const thanks = document.getElementById('rsvpThanks');
+const submitBtn = document.getElementById('rsvpSubmit');
+
+function showThanks(answer){
+  form.hidden = true;
+  thanks.hidden = false;
+  thanks.textContent = answer === 'К сожалению, не приду'
+    ? 'Спасибо, что дали знать. Будем скучать.'
+    : `Спасибо, ждём вас ${CONFIG.date.long.replace(/\s*\d{4}$/, '')}.`;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('guestName').value.trim();
+  const answer = form.querySelector('input[name=answer]:checked');
+
+  if (!name){ note.textContent = 'Напишите, пожалуйста, имя.'; return; }
+  if (!answer){ note.textContent = 'Выберите один из вариантов.'; return; }
+  note.textContent = '';
+
+  if (!FORM_ENDPOINT){
+    console.log('RSVP:', { name, answer: answer.value });
+    showThanks(answer.value);
+    return;
+  }
+
+  submitBtn.querySelector('span').textContent = 'Отправляем…';
+  try {
+    const res = await fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name, answer: answer.value })
+    });
+    if (!res.ok) throw new Error(res.status);
+    showThanks(answer.value);
+  } catch (err) {
+    submitBtn.querySelector('span').textContent = 'Отправить ответ';
+    note.textContent = 'Ответ не ушёл. Проверьте соединение и попробуйте ещё раз.';
+  }
+});
+</script>
+</body>
+</html>
