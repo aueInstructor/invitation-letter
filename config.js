@@ -198,7 +198,7 @@ const CONFIG = {
       hosts: {
         surnameBefore: '',        // по-казахски фамилия впереди
         names: 'Бахыт - Гүлнар',
-        surnameAfter: 'Шанаевтар',
+        surnameAfter: 'Шанаевы',
       },
 
       headings: {
