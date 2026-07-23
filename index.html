@@ -391,9 +391,13 @@ function applyLang(){
     `<span class="nm">${couple.two}</span>`;
   set('inviteAfter', L.invite.after);
 
-  // хозяева
+  // хозяева: фамилия отдельной строкой — перед именами (казахский
+  // порядок) или после них (русский). Пустое поле просто не рисуется.
   set('hHosts', L.headings.hosts);
-  set('hosts', L.hosts);
+  const H = typeof L.hosts === 'string' ? { names: L.hosts } : (L.hosts || {});
+  const hostLine = t => t ? `<span class="nm">${t}</span>` : '';
+  $('hosts').innerHTML =
+    hostLine(H.surnameBefore) + hostLine(H.names) + hostLine(H.surnameAfter);
 
   // дата торжества
   set('hCeremony', L.headings.ceremony);
