@@ -119,7 +119,7 @@ const CONFIG = {
       hosts: {
         surnameBefore: '',            // фамилия перед именами
         names: 'Бахыт - Гулнар',
-        surnameAfter: 'Фамилия',      // фамилия после имён
+        surnameAfter: 'Шанаевы',      // фамилия после имён
       },
 
       headings: {
@@ -196,7 +196,7 @@ const CONFIG = {
       },
 
       hosts: {
-        surnameBefore: 'Тегі',        // по-казахски фамилия впереди
+        surnameBefore: 'Шанаев',        // по-казахски фамилия впереди
         names: 'Бахыт - Гүлнар',
         surnameAfter: '',
       },
