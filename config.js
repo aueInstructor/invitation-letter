@@ -196,9 +196,9 @@ const CONFIG = {
       },
 
       hosts: {
-        surnameBefore: 'Шанаев',        // по-казахски фамилия впереди
+        surnameBefore: '',        // по-казахски фамилия впереди
         names: 'Бахыт - Гүлнар',
-        surnameAfter: '',
+        surnameAfter: 'Шанаевтар',
       },
 
       headings: {
