@@ -40,7 +40,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prata&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+<!-- style.css грузим с меткой времени: GitHub Pages кэширует файлы на
+     10 минут и заголовки менять не даёт, поэтому метка заставляет браузер
+     всегда брать свежую версию — правки видны сразу, без Ctrl+Shift+R. -->
+<script>document.write('<link rel="stylesheet" href="style.css?v=' + Date.now() + '">')</script>
 <script>
 /* Локальный просмотр: при открытии файла с диска (file://) браузер
    запрещает CSS-маски как «чужой источник», и покрашенные детали
@@ -192,7 +195,9 @@ if (location.protocol === 'file:') document.documentElement.classList.add('local
 <!-- скрытый приёмник ответа Google Формы (запасной путь отправки) -->
 <iframe name="gformSink" id="gformSink" style="display:none" title="" aria-hidden="true"></iframe>
 
-<script src="config.js"></script>
+<!-- config.js — тоже с меткой времени, чтобы правки данных подхватывались
+     сразу. document.write сохраняет порядок: скрипты ниже ждут CONFIG. -->
+<script>document.write('<script src="config.js?v=' + Date.now() + '"><\/script>')</script>
 <script>
 /* ═══════════════════════════════════════════════════════════════
    1. ФОРМА РОЗОВЫХ ПАННО — волнистые края рисуются кодом
